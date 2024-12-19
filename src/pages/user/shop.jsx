@@ -8,6 +8,7 @@ import { API_URL } from '../../constants';
 
 
 const Shop = ({ category }) => {
+  // State declarations remain the same
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loadMore, setLoadMore] = useState(6);
   const [products, setProducts] = useState([]);
@@ -16,15 +17,32 @@ const Shop = ({ category }) => {
   const [loading, setLoading] = useState(true);
 
   const categories = [
-    { name: 'Fashion Accessories', img: 'https://cdn.igp.com/f_auto,q_auto,t_pnopt12prodlp/products/p-modish-fashion-necklace-25631-m.jpg' },
-    { name: 'Books', img: "https://tse2.mm.bing.net/th?id=OIP.uyi1Q5l2H8Zf9APJQplJfQHaEK&pid=Api&P=0&h=180" },
-    { name: 'Gift Boxes', img: "http://images4.fanpop.com/image/photos/22200000/Christmas-gifts-christmas-gifts-22231235-2048-2048.jpg" },
-    { name: 'Stationery', img: "https://tse1.mm.bing.net/th?id=OIP.UCpcTmMMOdXTF6WAhtD94QHaH0&pid=Api&P=0&h=180" },
+    { 
+      name: 'Fashion Accessories', 
+      img: 'https://cdn.igp.com/f_auto,q_auto,t_pnopt12prodlp/products/p-modish-fashion-necklace-25631-m.jpg',
+      description: 'Trendy accessories for every occasion'
+    },
+    { 
+      name: 'Books', 
+      img: "https://tse2.mm.bing.net/th?id=OIP.uyi1Q5l2H8Zf9APJQplJfQHaEK&pid=Api&P=0&h=180",
+      description: 'Discover your next favorite read'
+    },
+    { 
+      name: 'Gift Boxes', 
+      img: "http://images4.fanpop.com/image/photos/22200000/Christmas-gifts-christmas-gifts-22231235-2048-2048.jpg",
+      description: 'Perfect presents for loved ones'
+    },
+    { 
+      name: 'Stationery', 
+      img: "https://tse1.mm.bing.net/th?id=OIP.UCpcTmMMOdXTF6WAhtD94QHaH0&pid=Api&P=0&h=180",
+      description: 'Quality supplies for work and study'
+    },
   ];
 
   const { categoryName } = useParams();
   const navigate = useNavigate();
 
+  // Effects and functions remain the same
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -87,164 +105,137 @@ const Shop = ({ category }) => {
     );
   }
 
+  const ProductCard = ({ product }) => (
+    <motion.div
+      className="bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+      whileHover={{ y: -5 }}
+    >
+      <Link to={`/${product.productId}`} className="block">
+        <div className="aspect-w-1 aspect-h-1 w-full">
+          <img 
+            src={product.img} 
+            alt={product.name}
+            className="w-full h-48 object-cover object-center"
+          />
+        </div>
+        <div className="p-4">
+          <h4 className="font-bold text-pink-800 text-sm sm:text-base truncate">
+            {product.name}
+          </h4>
+          <p className="text-gray-600 mt-1 font-semibold">₹{product.price}</p>
+        </div>
+      </Link>
+    </motion.div>
+  );
+
   return (
     <>
       <Helmet>
         <title>Shop | Mera Bestie</title>
       </Helmet>
+
+      {/* Promotional Banner */}
+      <div className="bg-pink-500 text-white text-center py-2 px-4">
+        <p className="text-sm sm:text-base">
+          USE CODE OFF10 TO GET FLAT 10% OFF ON ORDERS ABOVE RS.499 | FREE SHIPPING | COD AVAILABLE
+        </p>
+      </div>
+
       <div className="bg-gradient-to-b from-pink-50 to-pink-100 min-h-screen">
         <Navbar className="sticky top-0 z-50 bg-white shadow-md" />
 
-        {/* Categories Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 my-14">
-          <h2 className="text-3xl font-bold text-pink-900 text-center mb-8">
+        {/* Categories Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 mt-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-pink-900 text-center mb-8">
             Shop by Category
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => (
               <motion.div
                 key={index}
-                className="bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
-                onClick={() =>
-                  navigate(`/${category.name.toLowerCase().replace(/ /g, "-")}`)
-                }
+                className="relative bg-white rounded-xl shadow-md overflow-hidden cursor-pointer"
+                onClick={() => navigate(`/${category.name.toLowerCase().replace(/ /g, "-")}`)}
                 whileHover={{ y: -5 }}
               >
-                <div
-                  className="h-40 sm:h-48 bg-cover bg-center"
-                  style={{ backgroundImage: `url('${category.img}')` }}
-                ></div>
-                <div className="p-3 sm:p-4">
-                  <h3 className="text-sm sm:text-base font-bold text-pink-800 text-center">
-                    {category.name}
-                  </h3>
+                <div className="aspect-w-16 aspect-h-9">
+                  <img
+                    src={category.img}
+                    alt={category.name}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+                <div className="p-4 bg-white">
+                  <h3 className="text-lg font-bold text-pink-800 mb-1">{category.name}</h3>
+                  <p className="text-sm text-gray-600">{category.description}</p>
                 </div>
               </motion.div>
             ))}
           </div>
-        </div>
+        </section>
 
         {/* Products Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-3xl font-bold text-pink-900 text-center mb-8">
-            {selectedCategory !== 'all' ? `Search By Categories: ${selectedCategory}` : 'Explore More'}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-pink-900 text-center mb-8">
+            {selectedCategory !== 'all' ? `${selectedCategory}` : 'All Products'}
           </h2>
-          <motion.div
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredProducts.slice(0, loadMore).map((product, index) => (
-              <motion.div
-                key={index}
-                className="bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                whileHover={{ y: -5 }}
-              >
-                <Link to={`/${product.productId}`} className="block">
-                  <div
-                    className="h-40 sm:h-48 bg-cover bg-center"
-                    style={{ backgroundImage: `url('${product.img}')` }}
-                  ></div>
-                  <div className="p-3 sm:p-4 text-center">
-                    <h4 className="font-bold text-pink-800 text-sm sm:text-base">
-                      {product.name}
-                    </h4>
-                    <p className="text-gray-600 mt-1">₹{product.price}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        {/* Best Sellers Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-3xl font-bold text-pink-900 text-center mb-8">
-            Best Sellers
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {bestSellers.map((product, index) => (
-              <motion.div
-                key={index}
-                className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                whileHover={{ y: -5 }}
-              >
-                <Link to={`/${product.productId}`} className="block">
-                  <div
-                    className="h-40 sm:h-48 bg-cover bg-center"
-                    style={{ backgroundImage: `url('${product.img}')` }}
-                  ></div>
-                  <div className="p-3 sm:p-4 text-center">
-                    <h4 className="font-bold text-pink-800 text-sm sm:text-base">
-                      {product.name}
-                    </h4>
-                    <p className="text-gray-600 font-semibold mt-1">₹{product.price}</p>
-                  </div>
-                </Link>
-              </motion.div>
+              <ProductCard key={index} product={product} />
             ))}
           </div>
-        </div>
+          {filteredProducts.length > loadMore && (
+            <div className="text-center mt-8">
+              <button
+                onClick={() => setLoadMore(prev => prev + 6)}
+                className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+              >
+                Load More
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* Best Sellers Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 bg-white">
+          <h2 className="text-2xl sm:text-3xl font-bold text-pink-900 text-center mb-8">
+            Best Sellers
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {bestSellers.map((product, index) => (
+              <ProductCard key={index} product={product} />
+            ))}
+          </div>
+        </section>
 
         {/* Footer */}
-        <footer className="bg-white py-12 sm:py-16 text-black border-t border-pink-200">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col items-center md:items-start">
-              <h4 className="text-2xl sm:text-3xl font-extrabold text-pink-800 mb-4">
-                MERA Bestie
-              </h4>
-              <p className="text-gray-600 mb-4 text-center md:text-left">
-                Your one-stop destination for thoughtful and unique gifts.
-              </p>
-              <div className="flex space-x-6 text-2xl sm:text-3xl mt-4">
-                <a
-                  href="https://facebook.com/merabestie"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-pink-600 hover:text-pink-800 transition-colors"
-                >
-                  <FaFacebook />
-                </a>
-                <a
-                  href="https://instagram.com/merabestie"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-pink-600 hover:text-pink-800 transition-colors"
-                >
-                  <FaInstagram />
-                </a>
-                <a
-                  href="https://twitter.com/merabestie"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-pink-600 hover:text-pink-800 transition-colors"
-                >
-                  <FaTwitter />
-                </a>
+        <footer className="bg-white py-12 border-t border-pink-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="text-center md:text-left">
+                <h4 className="text-2xl font-bold text-pink-800 mb-4">MERA Bestie</h4>
+                <p className="text-gray-600 mb-4">
+                  Your one-stop destination for thoughtful and unique gifts.
+                </p>
+                <div className="flex justify-center md:justify-start space-x-6 text-2xl">
+                  <a href="https://facebook.com" className="text-pink-600 hover:text-pink-800">
+                    <FaFacebook />
+                  </a>
+                  <a href="https://instagram.com" className="text-pink-600 hover:text-pink-800">
+                    <FaInstagram />
+                  </a>
+                  <a href="https://twitter.com" className="text-pink-600 hover:text-pink-800">
+                    <FaTwitter />
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="text-center md:text-right">
-              <h5 className="text-xl sm:text-2xl font-bold text-pink-800 mb-4">Contact Us</h5>
-              <p className="text-gray-600">
-                3181 Street Name, City, India
-                <br />
-                Email:{' '}
-                <a
-                  href="mailto:support@merabestie.com"
-                  className="hover:underline hover:text-pink-800 transition-colors"
-                >
-                  support@merabestie.com
-                </a>
-                <br />
-                Phone:{' '}
-                <a
-                  href="tel:+911234567890"
-                  className="hover:underline hover:text-pink-800 transition-colors"
-                >
-                  +91 1234567890
-                </a>
-              </p>
+              <div className="text-center md:text-right">
+                <h5 className="text-xl font-bold text-pink-800 mb-4">Contact Us</h5>
+                <p className="text-gray-600">
+                  3181 Street Name, City, India<br />
+                  Email: support@merabestie.com<br />
+                  Phone: +91 1234567890
+                </p>
+              </div>
             </div>
           </div>
         </footer>

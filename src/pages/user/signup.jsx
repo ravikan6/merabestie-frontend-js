@@ -51,7 +51,7 @@ export default function SignUp() {
         >
           <div className="p-8">
             <div className="text-center mb-8">
-              <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+              <h2 className="text-4xl font-extrabold text-gray-900 mx-5 tracking-tight">
                 Create Your Account
               </h2>
               <p className="text-pink-600 mt-2">

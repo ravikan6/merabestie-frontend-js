@@ -142,7 +142,7 @@ const CouponPage = () => {
         <title>Coupons | Admin Dashboard</title>
       </Helmet>
       <Sidebar />
-      <div className="min-h-screen bg-gray-100 sm:ml-[10vh] md:ml-[40vh] lg:ml-[40vh]">
+      <div className="min-h-screen bg-gray-100 sm:ml-0 md:ml-[10vh] lg:ml-[40vh]">
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
