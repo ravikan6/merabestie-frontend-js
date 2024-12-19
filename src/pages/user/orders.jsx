@@ -170,7 +170,16 @@ const OrderCard = ({ order, fetchProductDetails }) => {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-700">Products Ordered</h3>
+          <div className='flex gap-6'>
+            <div>
+              <h3 className="text-sm font-semibold text-gray-500">Status</h3>
+              <p className="text-gray-800 font-medium">₹{order?.status}</p>
+            </div>
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-semibold text-gray-500">Payment</h3>
+              <p className="text-gray-800 font-medium">{order.paymentStatus}</p>
+            </div>
+          </div>
           {expanded ? (
             <ChevronUp className="w-5 h-5 text-gray-500" />
           ) : (
