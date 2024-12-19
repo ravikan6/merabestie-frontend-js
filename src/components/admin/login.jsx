@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Lock, Mail, User, Phone } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Eye, EyeOff, Lock, Mail, User, Phone } from "lucide-react";
+import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 import Navbar from "../user/navbar/navbar";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,39 +12,39 @@ const AdminLogin = () => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [selectedMethod, setSelectedMethod] = useState(null);
 
   const handleLogin = async () => {
     if (!sellerId || !emailOrPhone || !password) {
-      setError('Please fill all fields');
+      setError("Please fill all fields");
       return;
     }
 
     try {
       const response = await fetch(`${API_URL}/api/seller/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           sellerId,
           emailOrPhone,
-          password
-        })
-      });
+          password,
+        }),
+      }
+      );
 
       const data = await response.json();
 
-      if (response.ok && data.message === 'Login successful') {
-        // Navigate to admin route with sellerId
+      if (response.ok && data.message === "Login successful") {
         navigate(`/admin/${data.sellerId}`);
       } else {
-        setError(data.message || 'Login failed. Please try again.');
+        setError(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      setError('Something went wrong. Please try again.');
-      console.error('Error:', error);
+      setError("Something went wrong. Please try again.");
+      console.error("Error:", error);
     }
   };
 
@@ -54,15 +54,15 @@ const AdminLogin = () => {
         <title>Admin Login | Mera Bestie</title>
       </Helmet>
       <Navbar />
-      <div className="h-[calc(100vh-140px)] bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center p-4">
-        <motion.div 
+      <div className="h-[calc(100vh-140px)] bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center p-4 mt-20">
+        <motion.div
           className="w-full max-w-md bg-white shadow-2xl rounded-2xl overflow-hidden"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ 
+          transition={{
             duration: 0.5,
             type: "spring",
-            stiffness: 120
+            stiffness: 120,
           }}
         >
           <div className="p-8">
@@ -70,9 +70,7 @@ const AdminLogin = () => {
               <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight">
                 Admin Login
               </h2>
-              <p className="text-pink-600 mt-2">
-                Log in to Admin Dashboard
-              </p>
+              <p className="text-pink-600 mt-2">Log in to Admin Dashboard</p>
             </div>
 
             {error && (
@@ -99,21 +97,21 @@ const AdminLogin = () => {
               {!selectedMethod ? (
                 <div className="flex justify-center gap-8">
                   <button
-                    onClick={() => setSelectedMethod('emailId')}
+                    onClick={() => setSelectedMethod("emailId")}
                     className="flex flex-col items-center p-4 px-8 border-2 border-pink-300 rounded-xl hover:border-pink-500 transition-colors"
                   >
                     <Mail size={36} className="text-pink-500 mb-2" />
                     <span className="text-gray-700">Email</span>
                   </button>
                   <button
-                    onClick={() => setSelectedMethod('phone')} 
+                    onClick={() => setSelectedMethod("phone")}
                     className="flex flex-col items-center p-4 px-8 border-2 border-pink-300 rounded-xl hover:border-pink-500 transition-colors"
                   >
                     <Phone size={36} className="text-pink-500 mb-2" />
                     <span className="text-gray-700">Phone</span>
                   </button>
                 </div>
-              ) : selectedMethod === 'emailId' ? (
+              ) : selectedMethod === "emailId" ? (
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className="text-pink-400" />
@@ -144,7 +142,7 @@ const AdminLogin = () => {
                     className="w-full pl-20 pr-4 py-3 border border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition duration-300"
                     value={emailOrPhone}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
+                      const value = e.target.value.replace(/\D/g, "");
                       if (value.length <= 10) {
                         setEmailOrPhone(value);
                       }
@@ -182,8 +180,6 @@ const AdminLogin = () => {
               >
                 Login
               </motion.button>
-
-            
             </div>
           </div>
         </motion.div>

@@ -40,13 +40,13 @@ const SearchBar = () => {
             const response = await fetch(`${API_URL}/get-product`);
             const data = await response.json();
             if (data.success) {
-                const validProducts = data.products.filter(product =>
-                    (product.name.toLowerCase().includes(input.toLowerCase()) ||
-                        product.category.toLowerCase().includes(input.toLowerCase())) &&
-                    product.price &&
-                    product.img &&
+                const validProducts = data.products.filter(product => 
+                    (product.name.toLowerCase().includes(input.toLowerCase()) || 
+                     product.category.toLowerCase().includes(input.toLowerCase())) &&
+                    product.price && 
+                    product.img && 
                     product._id &&
-                    product.visibility === "on"
+                    product.visibility === "on" 
                 );
                 setSearchResult(validProducts);
                 setShowResults(validProducts.length > 0);
@@ -79,8 +79,8 @@ const SearchBar = () => {
                 />
                 <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-400" />
                 {inputValue && (
-                    <button
-                        onClick={clearSearch}
+                    <button 
+                        onClick={clearSearch} 
                         className="absolute right-3 top-1/2 -translate-y-1/2 
                                    text-pink-400 hover:text-pink-600 transition-colors"
                     >
@@ -111,21 +111,21 @@ const SearchBar = () => {
                         ) : (
                             <ul>
                                 {searchResult.map((result) => (
-                                    <Link
-                                        to={`/${result._id}`}
+                                    <Link 
+                                        to={`/${result._id}`} 
                                         key={result._id}
                                         onClick={() => setShowResults(false)}
                                     >
-                                        <li
+                                        <li 
                                             className="flex items-center p-3 
                                                        hover:bg-pink-50 
                                                        transition-colors 
                                                        cursor-pointer 
                                                        border-b last:border-b-0"
                                         >
-                                            <img
-                                                src={result.img}
-                                                alt={result.name}
+                                            <img 
+                                                src={result.img} 
+                                                alt={result.name} 
                                                 className="w-16 h-16 object-cover rounded-md mr-4"
                                             />
                                             <div>

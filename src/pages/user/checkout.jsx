@@ -279,7 +279,8 @@ const Checkout = () => {
       </Helmet>
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
+      {/* Increased spacing between Navbar and the container */}
+      <div className="container mx-auto px-4 py-8 mt-12">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Address Section */}
           <div className="md:w-2/3 bg-white rounded-2xl shadow-lg p-8">

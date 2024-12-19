@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import { motion } from 'framer-motion';
 import Navbar from '../../components/user/navbar/navbar';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { API_URL } from '../../constants'
 
 const Order = () => {
@@ -172,9 +172,9 @@ const OrderCard = ({ order, fetchProductDetails }) => {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-gray-700">Products Ordered</h3>
           {expanded ? (
-            <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+            <ChevronUp className="w-5 h-5 text-gray-500" />
           ) : (
-            <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+            <ChevronDown className="w-5 h-5 text-gray-500" />
           )}
         </div>
       </div>

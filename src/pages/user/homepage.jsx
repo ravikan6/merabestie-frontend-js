@@ -8,7 +8,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Navbar from "../../components/user/navbar/navbar";
 import Footer from "../../components/user/footer/footer";
-import { FaStar } from 'react-icons/fa';
+import { FaStar, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 // Scroll Progress Bar Component
 const ScrollProgress = () => {
@@ -36,6 +36,39 @@ const ScrollProgress = () => {
     />
   );
 };
+
+// Custom Left Arrow Component
+const CustomLeftArrow = ({ onClick }) => (
+  <button
+    onClick={onClick}
+    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 text-pink-500 rounded-full p-2 shadow-md z-10"
+    aria-label="Previous Slide"
+  >
+    <FaArrowLeft size={20} />
+  </button>
+);
+
+// Custom Right Arrow Component
+const CustomRightArrow = ({ onClick }) => (
+  <button
+    onClick={onClick}
+    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 text-pink-500 rounded-full p-2 shadow-md z-10"
+    aria-label="Next Slide"
+  >
+    <FaArrowRight size={20} />
+  </button>
+);
+
+// Custom Dot Component for Carousel
+const CustomDot = ({ onClick, active }) => (
+  <button
+    onClick={onClick}
+    className={`w-2 h-2 rounded-full mx-1 focus:outline-none transition-colors duration-300 ${
+      active ? 'bg-pink-700' : 'bg-pink-500 opacity-75'
+    }`}
+    aria-label="Carousel Dot"
+  />
+);
 
 const HomePage = () => {
   useEffect(() => {
@@ -166,62 +199,56 @@ const HomePage = () => {
       <div className="w-full bg-white overflow-hidden mt-16">
         {/* Hero Section with Modern Glassmorphism Design */}
 
-       {/* Product Categories Section with Refined Styling */}
-<section className="px-0 pt-0 py-20 bg-gray-50">
-  <div className="w-full">
-    {/* Removed carousel heading */}
+        {/* Product Categories Section with Refined Styling */}
+        <section className="px-0 pt-0 py-20 bg-gray-50">
+          <div className="w-full">
+            {/* Removed carousel heading */}
 
-    <Carousel
-      responsive={categoryResponsive} // Use separate responsive settings
-      infinite={true}
-      autoPlay={true}
-      autoPlaySpeed={3000}
-      keyBoardControl={true}
-      customTransition="transform 0.5s ease-in-out"
-      transitionDuration={500}
-      containerClass="carousel-container w-full" // Set carousel to full width
-      removeArrowOnDeviceType={[]} // Show arrows on all device types
-      showDots={false}
-      arrows={true} // Enable navigation arrows
-      dotListClass="custom-dot-list-style flex justify-center mt-4"
-      itemClass="carousel-item" // Removed padding class
-    >
-      {productCategories.map((category, index) => (
-        <Link
-          to={`/shop?category=${encodeURIComponent(category.category)}`}
-          key={index}
-          className="relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all transform hover:scale-105"
-        >
-          <img
-            src={category.img}
-            alt={category.title}
-            className="object-cover w-full h-96 transition-transform duration-500 ease-in-out transform hover:scale-110" // Increased height from h-80 to h-96
-          />
-          {/* Overlay with Gradient, Centered Text, and Button */}
-<div className="absolute inset-0 flex flex-col justify-end items-center bg-gradient-to-t from-black via-transparent to-transparent opacity-85 pt-4 pb-8">
-  <h3 className="text-5xl font-extrabold text-white text-center mb-2">{category.title}</h3> {/* Reduced margin */}
-  <button
-    onClick={() => window.location.href="/shop"}
-    className="mt-4 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-pink-700 transition"
-  >
-    Shop Now
-  </button>
-</div>
-        </Link>
-      ))}
-    </Carousel>
-
-    {/* Optional: Remove the additional "Shop Now" button below the carousel if not needed */}
-    {/* <div className="text-center mt-8">
-      <button
-        onClick={() => window.location.href="#shop"}
-        className="bg-gradient-to-r from-pink-500 to-blue-500 text-white px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition"
-      >
-        Shop Now
-      </button>
-    </div> */}
-  </div>
-</section>
+            <Carousel
+              responsive={categoryResponsive} // Use separate responsive settings
+              infinite={true}
+              autoPlay={true}
+              autoPlaySpeed={3000}
+              keyBoardControl={true}
+              customTransition="transform 0.5s ease-in-out"
+              transitionDuration={500}
+              containerClass="carousel-container relative w-full" // Set carousel to full width
+              removeArrowOnDeviceType={[]} // Show arrows on all device types
+              showDots={false}
+              arrows={true} // Enable navigation arrows
+              customDot={<CustomDot />} // Use CustomDot component
+              dotListClass="flex justify-center mt-4" // Align dots with flex
+              renderDotsOutside={false} // Ensure dots are inside the carousel
+              customLeftArrow={<CustomLeftArrow />} // Custom Left Arrow
+              customRightArrow={<CustomRightArrow />} // Custom Right Arrow
+              itemClass="carousel-item" // Removed padding class
+            >
+              {productCategories.map((category, index) => (
+                <Link
+                  to={`/shop?category=${encodeURIComponent(category.category)}`}
+                  key={index}
+                  className="relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all transform hover:scale-105"
+                >
+                  <img
+                    src={category.img}
+                    alt={category.title}
+                    className="object-cover w-full h-96 transition-transform duration-500 ease-in-out transform hover:scale-110" // Increased height from h-80 to h-96
+                  />
+                  {/* Overlay with Gradient, Centered Text, and Button */}
+                  <div className="absolute inset-0 flex flex-col justify-end items-center bg-gradient-to-t from-black/85 via-transparent to-transparent pt-4 pb-8">
+                    <h3 className="text-5xl font-extrabold text-white text-center mb-2">{category.title}</h3> {/* Opacity fixed to 100% */}
+                    <button
+                      onClick={() => window.location.href="/shop"}
+                      className="mt-4 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-pink-700 transition opacity-100"
+                    >
+                      Shop Now
+                    </button>
+                  </div>
+                </Link>
+              ))}
+            </Carousel>
+          </div>
+        </section>
 
         {/* New Arrivals Section */}
         <section className="px-0 py-20 bg-white">
@@ -258,52 +285,51 @@ const HomePage = () => {
             </div>
           </div>
         </section>
+
         
+<section
+  className="relative min-h-[80vh] flex items-center py-16 sm:py-20 md:py-24 lg:py-28" // Updated padding
+  data-aos="fade-up"
+>
+  <div className="absolute inset-0 z-0">
+    <img
+      src="https://tse3.mm.bing.net/th?id=OIP.RNJBshhRJcxPoSt2Slj5bAHaEK&pid=Api&P=0&h=180"
+      alt="Vision Background"
+      className="w-full h-full object-cover filter brightness-50"
+      loading="lazy"
+    />
+  </div>
 
-        {/* Vision Section with Modern Overlay Design */}
-        <section
-          className="relative min-h-[80vh] flex items-center"
-          data-aos="fade-up"
+  <div className="container relative z-10 mx-auto max-w-6xl px-4">
+    <motion.div
+      className="bg-white/20 backdrop-blur-md border border-white/30 p-16 md:p-20 rounded-3xl max-w-2xl mx-auto text-center shadow-2xl" // Increased padding
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1, ease: "easeOut" }}
+    >
+      <h2 className="text-5xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">
+        Our Vision
+      </h2>
+      <p className="text-xl text-white/90 mb-10 leading-relaxed">
+        We believe in creating more than just products – we craft
+        experiences that connect hearts, celebrate relationships, and
+        turn ordinary moments into extraordinary memories. Our mission
+        is to be your partner in expressing love, appreciation, and
+        thoughtfulness.
+      </p>
+      <Link to="/about">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-gradient-to-r from-pink-500 to-blue-500 text-white hover:opacity-90 px-12 py-4 rounded-full uppercase text-sm tracking-wider font-semibold shadow-xl transition-all"
         >
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://tse3.mm.bing.net/th?id=OIP.RNJBshhRJcxPoSt2Slj5bAHaEK&pid=Api&P=0&h=180"
-              alt="Vision Background"
-              className="w-full h-full object-cover filter brightness-50"
-              loading="lazy"
-            />
-          </div>
-
-          <div className="container relative z-10 mx-auto max-w-6xl px-4">
-            <motion.div
-              className="bg-white/20 backdrop-blur-md border border-white/30 p-12 md:p-16 rounded-3xl max-w-2xl mx-auto text-center shadow-2xl"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            >
-              <h2 className="text-5xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">
-                Our Vision
-              </h2>
-              <p className="text-xl text-white/90 mb-10 leading-relaxed">
-                We believe in creating more than just products – we craft
-                experiences that connect hearts, celebrate relationships, and
-                turn ordinary moments into extraordinary memories. Our mission
-                is to be your partner in expressing love, appreciation, and
-                thoughtfulness.
-              </p>
-              <Link to="/about">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-pink-500 to-blue-500 text-white hover:opacity-90 px-12 py-4 rounded-full uppercase text-sm tracking-wider font-semibold shadow-xl transition-all"
-                >
-                  Our Journey
-                </motion.button>
-              </Link>
-            </motion.div>
-          </div>
-        </section>
+          Our Journey
+        </motion.button>
+      </Link>
+    </motion.div>
+  </div>
+</section>
 
         {/* Reviews Section */}
         <div className="mt-12 max-w-7xl mx-auto p-9">
@@ -320,7 +346,7 @@ const HomePage = () => {
             removeArrowOnDeviceType={["tablet", "mobile"]}
             showDots={false} // Hide dots if desired
             arrows={false} // Hide navigation arrows
-            dotListClass="custom-dot-list-style flex justify-center mt-4"
+            // Removed dotListClass since showDots is false
             itemClass="carousel-item px-4" 
           >
             {reviews.map((review, index) => (
@@ -342,7 +368,6 @@ const HomePage = () => {
             ))}
           </Carousel>
         </div>
-        
 
         <Footer />
       </div>

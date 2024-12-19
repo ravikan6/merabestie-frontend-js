@@ -2,11 +2,23 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  FaSearch, FaTimes, FaBars, FaUser, FaShoppingCart, FaGift
-} from "react-icons/fa";
+  RiSearchLine, 
+  RiCloseLine, 
+  RiMenu3Line, 
+  RiUser3Line, 
+  RiShoppingCart2Line, 
+  RiGift2Line,
+  RiHome2Line,
+  RiStore2Line,
+  RiPhoneLine,
+  RiInformationLine,
+  RiLogoutBoxRLine,
+  RiFileList3Line,
+  RiUserAddLine,
+  RiLoginBoxLine,
+} from "react-icons/ri";
 import SearchBar from "./SearchBar";
 import { API_URL } from '../../../constants'
-
 
 const ProfessionalNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -147,10 +159,10 @@ const ProfessionalNavbar = () => {
   };
 
   const navLinks = [
-    { path: "/HomePage", name: "HOME" },
-    { path: "/shop", name: "SHOP" },
-    { path: "/contact", name: "CONTACT" },
-    { path: "/about", name: "ABOUT" }
+    { path: "/HomePage", name: "HOME", icon: RiHome2Line },
+    { path: "/shop", name: "SHOP", icon: RiStore2Line },
+    { path: "/contact", name: "CONTACT", icon: RiPhoneLine },
+    { path: "/about", name: "ABOUT", icon: RiInformationLine }
   ];
 
   return (
@@ -166,13 +178,14 @@ const ProfessionalNavbar = () => {
         }`}
       >
         <div className="max-w-[1200px] mx-auto px-4 flex items-center justify-center">
-          <FaGift className="mr-2" />
+          <RiGift2Line className="mr-2" />
           <span>
             USE CODE OFF10 TO GET FLAT 10% OFF ON ORDERS ABOVE RS.499 | FREE
             SHIPPING | COD AVAILABLE
           </span>
         </div>
       </div>
+
       {/* Main Navigation */}
       <div className="bg-white border-b">
         <div className="max-w-[1200px] mx-auto px-4 lg:px-0">
@@ -182,12 +195,12 @@ const ProfessionalNavbar = () => {
               onClick={toggleMenu}
               className="lg:hidden text-black hover:text-pink-600 transition"
             >
-              <FaBars className="w-6 h-6" />
+              <RiMenu3Line className="w-6 h-6" />
             </button>
 
             {/* Logo */}
             <Link
-              to="/HomePage"
+              to="/"
               className="text-2xl flex items-center hover:opacity-80 transition mx-auto lg:mx-0"
             >
               <span className="font-['Bodoni_MT'] font-bold text-3xl sm:text-4xl text-pink-600">
@@ -218,14 +231,14 @@ const ProfessionalNavbar = () => {
                 className="text-gray-800 hover:text-pink-600 transition"
                 onClick={toggleSearch}
               >
-                <FaSearch className="w-5 h-5" />
+                <RiSearchLine className="w-5 h-5" />
               </button>
 
               <Link
                 to="/cart"
                 className="relative text-gray-800 hover:text-pink-600 transition flex items-center"
               >
-                <FaShoppingCart className="w-5 h-5" />
+                <RiShoppingCart2Line className="w-5 h-5" />
                 <span className="ml-2 hidden md:block">Cart</span>
                 {cartItemCount > 0 && (
                   <span className="absolute top-[-8px] right-[-8px] bg-pink-600 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
@@ -239,7 +252,7 @@ const ProfessionalNavbar = () => {
                   onClick={toggleProfileMenu}
                   className="flex items-center text-gray-800 hover:text-pink-600 transition"
                 >
-                  <FaUser className="w-5 h-5" />
+                  <RiUser3Line className="w-5 h-5" />
                   <span className="ml-2 hidden md:block">
                     {userId ? `Hi, ${userName}` : "Profile"}
                   </span>
@@ -256,14 +269,16 @@ const ProfessionalNavbar = () => {
                       <>
                         <Link
                           to="/orders"
-                          className="block px-4 py-2 hover:bg-pink-50 transition"
+                          className="flex items-center px-4 py-2 hover:bg-pink-50 transition"
                         >
+                          <RiFileList3Line className="w-4 h-4 mr-2" />
                           My Orders
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 hover:bg-pink-50 transition"
+                          className="w-full text-left flex items-center px-4 py-2 hover:bg-pink-50 transition"
                         >
+                          <RiLogoutBoxRLine className="w-4 h-4 mr-2" />
                           Logout
                         </button>
                       </>
@@ -271,20 +286,23 @@ const ProfessionalNavbar = () => {
                       <>
                         <Link
                           to="/login"
-                          className="block px-4 py-2 hover:bg-pink-50 transition"
+                          className="flex items-center px-4 py-2 hover:bg-pink-50 transition"
                         >
+                          <RiLoginBoxLine className="w-4 h-4 mr-2" />
                           Login
                         </Link>
                         <Link
                           to="/Signup"
-                          className="block px-4 py-2 hover:bg-pink-50 transition"
+                          className="flex items-center px-4 py-2 hover:bg-pink-50 transition"
                         >
+                          <RiUserAddLine className="w-4 h-4 mr-2" />
                           Sign Up
                         </Link>
                         <Link
                           to='/seller/login'
-                          className="block w-full text-left px-4 py-2 hover:bg-pink-50 transition"
+                          className="flex items-center px-4 py-2 hover:bg-pink-50 transition"
                         >
+                          <RiStore2Line className="w-4 h-4 mr-2" />
                           Seller
                         </Link>
                       </>
@@ -305,49 +323,54 @@ const ProfessionalNavbar = () => {
             animate="open"
             exit="closed"
             variants={menuVariants}
-            className="lg:hidden fixed inset-0 z-50 bg-[#fdf9f3]"
+            className="lg:hidden fixed inset-y-0 left-0 w-64 z-50 bg-white shadow-xl"
           >
             <div className="flex justify-between items-center p-4 border-b">
-              <Link 
-                to="/HomePage" 
-                className="text-2xl font-bold text-pink-600 mx-auto" 
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="font-['Bodoni_MT'] text-4xl">MERA Bestie</span>
-              </Link>
+              <span className="font-['Bodoni_MT'] text-2xl font-bold text-pink-600">
+                Menu
+              </span>
               <motion.button
                 whileHover={{ rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMenuOpen(false)}
-                className="absolute right-4 text-gray-800"
+                className="text-gray-800"
               >
-                <FaTimes className="w-6 h-6" />
+                <RiCloseLine className="w-6 h-6" />
               </motion.button>
             </div>
-            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] p-4">
-              <div className="w-full max-w-md space-y-6">
-                {navLinks.map(({ path, name }, i) => (
-                  <motion.div
-                    key={path}
-                    custom={i}
-                    variants={linkVariants}
-                    initial="closed"
-                    animate="open"
-                    exit="closed"
+            <div className="py-4">
+              {navLinks.map(({ path, name, icon: Icon }, i) => (
+                <motion.div
+                  key={path}
+                  custom={i}
+                  variants={linkVariants}
+                  initial="closed"
+                  animate="open"
+                  exit="closed"
+                >
+                  <Link
+                    to={path}
+                    className={`flex items-center px-6 py-3 ${
+                      isActive(path)
+                        ? "text-pink-600 bg-pink-50"
+                        : "text-gray-800 hover:bg-pink-50 hover:text-pink-600"
+                    } transition-colors duration-200`}
+                    onClick={() => setIsMenuOpen(false)}
                   >
-                    <Link
-                      to={path}
-                      className={`block text-center text-xl py-3 w-full ${
-                        isActive(path) 
-                          ? "text-pink-600" 
-                          : "text-gray-800 hover:text-pink-600"
-                      } transition-colors duration-200`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {name}
-                    </Link>
-                  </motion.div>
-                ))}
+                    <Icon className="w-5 h-5 mr-3" />
+                    {name}
+                  </Link>
+                </motion.div>
+              ))}
+              <div className="border-t mt-4 pt-4">
+                <Link
+                  to="/cart"
+                  className="flex items-center px-6 py-3 text-gray-800 hover:bg-pink-50 hover:text-pink-600 transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <RiShoppingCart2Line className="w-5 h-5 mr-3" />
+                  Cart {cartItemCount > 0 && `(${cartItemCount})`}
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -373,8 +396,9 @@ const ProfessionalNavbar = () => {
               <SearchBar />
               <button 
                 onClick={toggleSearch}
-                className="mt-2 text-gray-600 hover:text-pink-600"
+                className="mt-2 text-gray-600 hover:text-pink-600 flex items-center justify-center w-full"
               >
+                <RiCloseLine className="w-4 h-4 mr-2" />
                 Close
               </button>
             </motion.div>
