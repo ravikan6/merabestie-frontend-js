@@ -54,7 +54,13 @@ const Checkout = () => {
     }
 
     try {
-      const cartResponse = await fetch(`${API_URL}/cart/${userId}`);
+      const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId })
+      });
       const cartData = await cartResponse.json();
 
       if (!cartData.success) {
@@ -62,7 +68,7 @@ const Checkout = () => {
         return;
       }
 
-      const groupedItems = cartData.cart.reduce((acc, item) => {
+      const groupedItems = cartData.cart.productsInCart.reduce((acc, item) => {
         if (!acc[item.productId]) {
           acc[item.productId] = {
             productId: item.productId,

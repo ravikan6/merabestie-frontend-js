@@ -156,7 +156,7 @@ const CartItems = () => {
 
   const handleVoucherRedeem = async () => {
     try {
-      const response = await fetch(`${API_URL}/verify-coupon`, {
+      const response = await fetch(`${API_URL}/coupon/verify-coupon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

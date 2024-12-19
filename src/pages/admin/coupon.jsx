@@ -54,7 +54,7 @@ const CouponPage = () => {
 
   const fetchCoupons = async () => {
     try {
-      const response = await fetch(`${API_URL}/coupon`);
+      const response = await fetch(`${API_URL}/coupon/get-coupon`);
       const data = await response.json();
       if (data.success) {
         setCoupons(data.coupons);
@@ -83,7 +83,7 @@ const CouponPage = () => {
 
   const handleDeleteCoupon = async (code, discountPercentage) => {
     try {
-      const response = await fetch(`${API_URL}/delete-coupon`, {
+      const response = await fetch(`${API_URL}/coupon/delete-coupon`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ const CouponPage = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/save-coupon`, {
+      const response = await fetch(`${API_URL}/coupon/save-coupon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

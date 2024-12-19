@@ -46,7 +46,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/seller/signup`, {
+      const response = await fetch(`${API_URL}/admin/seller/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -74,7 +74,7 @@ const AdminSignup = () => {
   const handleVerificationMethodSelect = async (method) => {
     setVerificationMethod(method);
     try {
-      const response = await fetch(`${API_URL}/seller/send-otp`, {
+      const response = await fetch(`${API_URL}/admin/seller/send-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -100,7 +100,7 @@ const AdminSignup = () => {
     if (resendDisabled) return;
 
     try {
-      const response = await fetch(`${API_URL}/seller/send-otp`, {
+      const response = await fetch(`${API_URL}/admin/seller/send-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
