@@ -64,7 +64,6 @@ const Checkout = () => {
       const cartData = await cartResponse.json();
 
       if (!cartData.success) {
-        setError(cartData.message || 'Failed to fetch cart');
         setLoading(false);
         return;
       }
