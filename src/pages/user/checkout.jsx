@@ -10,6 +10,7 @@ import { API_URL, APP_DESC, APP_NAME, RAZORPAY_API } from '../../constants'
 const Checkout = () => {
   const location = useLocation()
   const total = parseFloat(location.state?.total || 0)
+  const [shipping, setShipping] = useState(0)
   const discount = parseFloat(location.state?.discount || 0)
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
@@ -45,6 +46,14 @@ const Checkout = () => {
   useEffect(() => {
     fetchCartItems();
   }, []);
+
+  useEffect(() => {
+    if (Number(total) < 499) {
+      setShipping(99);
+    } else {
+      setShipping(0);
+    }
+  }, [total])
 
   const fetchCartItems = async () => {
     const userId = sessionStorage.getItem('userId');
@@ -178,7 +187,7 @@ const Checkout = () => {
       const response = await fetch(`${API_URL}/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total * 100, currency: 'INR', userId: userId }), // Amount in paise
+        body: JSON.stringify({ amount: (total + shipping) * 100, currency: 'INR', userId: userId }), // Amount in paise
       });
       const order = await response.json();
 
@@ -420,12 +429,20 @@ const Checkout = () => {
 
               <div className="flex justify-between text-gray-700">
                 <span>Shipping</span>
-                <span className="font-semibold text-green-600">Free</span>
+                <span className="font-semibold text-green-600">
+                  {shipping > 0 ? `Rs. ${shipping}` : "Free"}
+                </span>
               </div>
+
+              {
+                shipping > 0 ? <div className='text-green-400 text-end text-xs flex justify-end my-1'>
+                  <p className='text-end'> Free shipping on orders above Rs. 499.</p>
+                </div> : null
+              }
 
               <div className="flex justify-between text-xl font-bold border-t pt-4">
                 <span>Total</span>
-                <span className="text-pink-600">Rs. {total.toFixed(2)}</span>
+                <span className="text-pink-600">Rs. {(total + shipping).toFixed(2)}</span>
               </div>
 
               <button
