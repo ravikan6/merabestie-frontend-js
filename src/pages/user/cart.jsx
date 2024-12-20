@@ -30,7 +30,6 @@ const ShoppingCartPage = () => {
         </div>
 
         {/* Content Section */}
-        {/* Content Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-auto">
           <CartItems />
           <RecentlyViewed />
