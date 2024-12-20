@@ -63,57 +63,52 @@ const Checkout = () => {
     }
 
     try {
-      const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId })
-      });
-      const cartData = await cartResponse.json();
-
-      if (!cartData.success) {
-        setLoading(false);
-        return;
-      }
-
-      // Create a map to track unique products and their counts
-      const productCountMap = cartData.cart.productsInCart.reduce((acc, item) => {
-        acc[item.productId] = (acc[item.productId] || 0) + 1;
-        return acc;
-      }, {});
-
-      // Get unique product IDs
-      const uniqueProductIds = [...new Set(cartData.cart.productsInCart.map(item => item.productId))];
-
-      // Get product details for each unique product
-      const productPromises = uniqueProductIds.map(async (productId) => {
-        const productResponse = await fetch(`${API_URL}/:productId`, {
+        const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ productId })
+          body: JSON.stringify({ userId })
         });
-        const productData = await productResponse.json();
+        const cartData = await cartResponse.json();
 
-        if (productData.success) {
-          return {
-            ...productData.product,
-            quantity: productCountMap[productId], // Set quantity from the count map
-            cartItemId: cartData.cart.productsInCart.find(item => item.productId === productId)._id
-          };
+        if (!cartData.success) {
+          setError(cartData.message || 'Failed to fetch cart');
+          setLoading(false);
+          return;
         }
-        return null;
-      });
 
-      const products = await Promise.all(productPromises);
-      setCartItems(products.filter(product => product !== null));
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching cart items:', err);
-      setLoading(false);
-    }
+        // Get unique product IDs
+        const uniqueProductIds = [...new Set(cartData.cart.productsInCart.map(item => item.productId))];
+
+        // Get product details for each unique product
+        const productPromises = uniqueProductIds.map(async (productId) => {
+          const productResponse = await fetch(`${API_URL}/:productId`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId })
+          });
+          const productData = await productResponse.json();
+
+          if (productData.success) {
+            return {
+              ...productData.product,
+              quantity: cartData.cart.productsInCart.find(item => item.productId === productId).productQty, // Set quantity from the count map
+              cartItemId: cartData.cart.productsInCart.find(item => item.productId === productId)._id
+            };
+          }
+          return null;
+        });
+
+        const products = await Promise.all(productPromises);
+        setCartItems(products.filter(product => product !== null));
+        setLoading(false);
+
+      } catch (err) {
+        setLoading(false);
+      }
   };
 
   const handleAddressChange = (e) => {
