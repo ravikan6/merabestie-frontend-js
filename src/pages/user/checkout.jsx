@@ -63,52 +63,50 @@ const Checkout = () => {
     }
 
     try {
-        const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
+      const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId })
+      });
+      const cartData = await cartResponse.json();
+
+      if (!cartData.success) {
+        setLoading(false);
+        return;
+      }
+
+      // Get unique product IDs
+      const uniqueProductIds = [...new Set(cartData.cart.productsInCart.map(item => item.productId))];
+
+      // Get product details for each unique product
+      const productPromises = uniqueProductIds.map(async (productId) => {
+        const productResponse = await fetch(`${API_URL}/:productId`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ userId })
+          body: JSON.stringify({ productId })
         });
-        const cartData = await cartResponse.json();
+        const productData = await productResponse.json();
 
-        if (!cartData.success) {
-          setError(cartData.message || 'Failed to fetch cart');
-          setLoading(false);
-          return;
+        if (productData.success) {
+          return {
+            ...productData.product,
+            quantity: cartData.cart.productsInCart.find(item => item.productId === productId).productQty, // Set quantity from the count map
+            cartItemId: cartData.cart.productsInCart.find(item => item.productId === productId)._id
+          };
         }
+        return null;
+      });
 
-        // Get unique product IDs
-        const uniqueProductIds = [...new Set(cartData.cart.productsInCart.map(item => item.productId))];
-
-        // Get product details for each unique product
-        const productPromises = uniqueProductIds.map(async (productId) => {
-          const productResponse = await fetch(`${API_URL}/:productId`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ productId })
-          });
-          const productData = await productResponse.json();
-
-          if (productData.success) {
-            return {
-              ...productData.product,
-              quantity: cartData.cart.productsInCart.find(item => item.productId === productId).productQty, // Set quantity from the count map
-              cartItemId: cartData.cart.productsInCart.find(item => item.productId === productId)._id
-            };
-          }
-          return null;
-        });
-
-        const products = await Promise.all(productPromises);
-        setCartItems(products.filter(product => product !== null));
-        setLoading(false);
-
-      } catch (err) {
-        setLoading(false);
-      }
+      const products = await Promise.all(productPromises);
+      setCartItems(products.filter(product => product !== null));
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   };
 
   const handleAddressChange = (e) => {
@@ -430,8 +428,8 @@ const Checkout = () => {
               </div>
 
               {
-                shipping > 0 ? <div className='text-green-400 text-end text-xs flex justify-end my-1'>
-                  <p className='text-end'> Free shipping on orders above Rs. 499.</p>
+                shipping > 0 ? <div className='text-gray-500 text-end text-xs flex justify-end my-1'>
+                  <p className='text-end text-underline'> Free shipping on orders above Rs. 499.</p>
                 </div> : null
               }
 
