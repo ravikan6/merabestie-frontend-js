@@ -65,7 +65,7 @@ const CartItems = () => {
           if (productData.success) {
             return {
               ...productData.product,
-              quantity: productCountMap[productId], // Set quantity from the count map
+              quantity: cartData.cart.productsInCart.find(item => item.productId === productId).productQty, // Set quantity from the count map
               cartItemId: cartData.cart.productsInCart.find(item => item.productId === productId)._id
             };
           }
@@ -124,16 +124,18 @@ const CartItems = () => {
 
 
   const handleRemoveItem = async (itemId) => {
+    const item = cartItems.find(item => item._id === itemId);
+
     try {
       const userId = sessionStorage.getItem('userId');
       const response = await fetch(`${API_URL}/cart/delete-items`, {
-        method: 'DELETE',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           userId,
-          productId: itemId
+          productId: item.productId
         })
       });
 
