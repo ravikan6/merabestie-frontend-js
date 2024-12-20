@@ -29,7 +29,7 @@ const Product = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/verify-seller`, {
+        const response = await fetch(`${API_URL}/admin/verify-seller`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
