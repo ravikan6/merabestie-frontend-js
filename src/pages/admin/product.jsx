@@ -303,7 +303,7 @@ const Product = () => {
                     )}
                     <button
                       onClick={() => handleDelete(product.productId)}
-                      className="text-red-600 hover:text-red-900 ml-1"
+                      className="text-red-600 hover:text-red-900 ml-2.5"
                     >
                       <Delete size={18} />
                     </button>
