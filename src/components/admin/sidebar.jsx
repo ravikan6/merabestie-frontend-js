@@ -9,6 +9,7 @@ const Sidebar = () => {
     const { sellerId } = useParams();
     const [isOpen, setIsOpen] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
+    const [showImageDialog, setShowImageDialog] = useState(false)
     const [productData, setProductData] = useState({
         name: '',
         price: '',
@@ -257,11 +258,19 @@ const Sidebar = () => {
                         <p className="text-center text-gray-600 mb-2">
                             Please, manage your products through the button below.
                         </p>
+
                         <button
                             onClick={() => setShowDialog(true)}
                             className="w-full bg-pink-300 text-white py-2 rounded hover:bg-pink-400 mb-2"
                         >
                             + Add Product
+                        </button>
+
+                        <button
+                            onClick={() => setShowImageDialog(true)}
+                            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-900 mb-2"
+                        >
+                            Upload Image
                         </button>
 
                         <Link
@@ -285,8 +294,71 @@ const Sidebar = () => {
                     </footer>
                 </div>
             </div>
+
+            {showImageDialog && (
+                <Uploader onClose={() => setShowImageDialog(false)} />
+            )}
         </>
     );
 };
+
+const Uploader = ({ onClose }) => {
+    const [loading, setLoading] = useState(false);
+    const [uploadedUrl, setUploadedUrl] = useState('');
+
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('myFile', file);
+
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${API_URL}/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            if (result.success) {
+                setUploadedUrl(result.fileUrl);
+            } else {
+                setUploadedUrl(result.error)
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(uploadedUrl);
+    };
+
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                <button className="absolute top-2 right-2 text-gray-500" onClick={onClose}>X</button>
+                <h2 className="text-xl font-bold mb-4">Upload File</h2>
+                {loading ? (
+                    <div className="text-center">Loading...</div>
+                ) : (
+                    <div className="text-center">
+                        <input type="file" onChange={handleFileUpload} className="mb-4" />
+                        <p className="text-gray-500">Drag & drop a file here, or click to select a file</p>
+                    </div>
+                )}
+                {uploadedUrl && (
+                    <div className="mt-4">
+                        <p className="text-green-500">File uploaded successfully:</p>
+                        <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500">{uploadedUrl}</a>
+                        <button onClick={copyToClipboard} className="ml-2 px-2 py-1 bg-blue-500 text-white rounded">Copy URL</button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 
 export default Sidebar;

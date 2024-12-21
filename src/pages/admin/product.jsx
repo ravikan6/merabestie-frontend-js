@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/admin/sidebar';
-import { Pencil, Save, Search, ArrowUpDown } from 'lucide-react';
+import { Pencil, Save, Search, ArrowUpDown, Delete } from 'lucide-react';
 import { Helmet } from "react-helmet";
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../constants';
@@ -41,7 +41,7 @@ const Product = () => {
         });
 
         const data = await response.json();
-        
+
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -105,6 +105,27 @@ const Product = () => {
     }
   };
 
+  const handleDelete = async (productId) => {
+    try {
+      const response = await fetch(`${API_URL}/delete-product`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          productId,
+        })
+      });
+
+      if (response.ok) {
+        setEditingId(null);
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error('Error updating stock values:', error);
+    }
+  };
+
   const handleSort = (key) => {
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
@@ -115,7 +136,7 @@ const Product = () => {
 
   const sortedProducts = React.useMemo(() => {
     if (!Array.isArray(products)) return [];
-    
+
     let sortableProducts = [...products];
     if (sortConfig.key !== null) {
       sortableProducts.sort((a, b) => {
@@ -131,7 +152,7 @@ const Product = () => {
     return sortableProducts;
   }, [products, sortConfig]);
 
-  const filteredProducts = sortedProducts.filter(product => 
+  const filteredProducts = sortedProducts.filter(product =>
     product.productId?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -146,7 +167,7 @@ const Product = () => {
         <div className="mb-6 flex justify-between items-center">
           <div className="relative">
             <div className={`flex items-center ${isSearchExpanded ? 'w-full md:w-64' : 'w-10 md:w-64'} transition-all duration-300`}>
-              <button 
+              <button
                 className="md:hidden absolute left-2 z-10"
                 onClick={() => setIsSearchExpanded(!isSearchExpanded)}
               >
@@ -155,9 +176,8 @@ const Product = () => {
               <input
                 type="text"
                 placeholder="Search by product ID or name..."
-                className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 ${
-                  isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
-                } transition-all duration-300`}
+                className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 ${isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
+                  } transition-all duration-300`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -211,7 +231,7 @@ const Product = () => {
                         type="text"
                         className="w-20 border rounded px-2 py-1"
                         value={editValues.name}
-                        onChange={(e) => setEditValues({...editValues, name: e.target.value})}
+                        onChange={(e) => setEditValues({ ...editValues, name: e.target.value })}
                       />
                     ) : (
                       product.name || '-'
@@ -223,7 +243,7 @@ const Product = () => {
                         type="text"
                         className="w-20 border rounded px-2 py-1"
                         value={editValues.category}
-                        onChange={(e) => setEditValues({...editValues, category: e.target.value})}
+                        onChange={(e) => setEditValues({ ...editValues, category: e.target.value })}
                       />
                     ) : (
                       product.category || '-'
@@ -235,7 +255,7 @@ const Product = () => {
                         type="number"
                         className="w-20 border rounded px-2 py-1"
                         value={editValues.price}
-                        onChange={(e) => setEditValues({...editValues, price: e.target.value})}
+                        onChange={(e) => setEditValues({ ...editValues, price: e.target.value })}
                       />
                     ) : (
                       product.price || '-'
@@ -247,7 +267,7 @@ const Product = () => {
                         type="number"
                         className="w-20 border rounded px-2 py-1"
                         value={editValues.inStockValue}
-                        onChange={(e) => setEditValues({...editValues, inStockValue: e.target.value})}
+                        onChange={(e) => setEditValues({ ...editValues, inStockValue: e.target.value })}
                       />
                     ) : (
                       product.inStockValue || '-'
@@ -259,7 +279,7 @@ const Product = () => {
                         type="number"
                         className="w-20 border rounded px-2 py-1"
                         value={editValues.soldStockValue}
-                        onChange={(e) => setEditValues({...editValues, soldStockValue: e.target.value})}
+                        onChange={(e) => setEditValues({ ...editValues, soldStockValue: e.target.value })}
                       />
                     ) : (
                       product.soldStockValue || '-'
@@ -281,6 +301,12 @@ const Product = () => {
                         <Pencil size={18} />
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDelete(product.productId)}
+                      className="text-red-600 hover:text-red-900 ml-1"
+                    >
+                      <Delete size={18} />
+                    </button>
                   </td>
                 </tr>
               ))}
