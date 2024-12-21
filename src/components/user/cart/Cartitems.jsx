@@ -90,6 +90,15 @@ const CartItems = () => {
     const newQuantity = item.quantity + change;
 
     if (newQuantity >= 1) {
+      // Update the quantity in the UI immediately
+      const updatedItems = cartItems.map(item => {
+        if (item._id === itemId) {
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      });
+      setCartItems(updatedItems);
+
       try {
         const userId = sessionStorage.getItem('userId');
         const response = await fetch(`${API_URL}/cart/update-quantity`, {
@@ -99,25 +108,19 @@ const CartItems = () => {
           },
           body: JSON.stringify({
             userId,
-            productId: item.productId, // Use productId here instead of itemId
+            productId: item.productId,
             productQty: newQuantity
           })
         });
 
         const data = await response.json();
-        if (data.success) {
-          const updatedItems = cartItems.map(item => {
-            if (item._id === itemId) {
-              return { ...item, quantity: newQuantity };
-            }
-            return item;
-          });
-          setCartItems(updatedItems);
-        } else {
+        if (!data.success) {
           console.error('Failed to update quantity:', data.message);
+          // Note: We're not reverting the UI change here
         }
       } catch (err) {
         console.error('Error updating quantity:', err);
+        // Note: We're not reverting the UI change here
       }
     }
   };
@@ -125,6 +128,9 @@ const CartItems = () => {
 
   const handleRemoveItem = async (itemId) => {
     const item = cartItems.find(item => item._id === itemId);
+
+    // Immediately update the UI by removing the item
+    setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
 
     try {
       const userId = sessionStorage.getItem('userId');
@@ -140,13 +146,16 @@ const CartItems = () => {
       });
 
       const data = await response.json();
-      if (data.success) {
-        setCartItems(cartItems.filter(item => item._id !== itemId));
+      if (!data.success) {
+        console.error('Failed to remove item from server:', data.message);
+        // Note: We're not reverting the UI change here
       }
     } catch (err) {
       console.error('Error removing item:', err);
+      // Note: We're not reverting the UI change here
     }
   };
+
 
   const calculateTotal = () => {
     const subtotal = cartItems.reduce((total, item) => {
@@ -266,7 +275,7 @@ const CartItems = () => {
                     </div>
 
                     <span className="font-medium text-base">
-                      Rs. {(parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity).toFixed(2)}
+                      Rs. {(parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)).toFixed(2)}
                     </span>
 
                     <button
@@ -314,14 +323,14 @@ const CartItems = () => {
             <div className="flex flex-col md:flex-row justify-between">
               <span>Subtotal</span>
               <span>Rs. {cartItems.reduce((total, item) =>
-                total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity),
+                total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)),
                 0).toFixed(2)}</span>
             </div>
             {discountInfo.percentage > 0 && (
               <div className="flex flex-col md:flex-row justify-between text-green-600">
                 <span>Discount ({discountInfo.percentage}%)</span>
                 <span>- Rs. {(cartItems.reduce((total, item) =>
-                  total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity),
+                  total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)),
                   0) * (discountInfo.percentage / 100)).toFixed(2)}</span>
               </div>
             )}

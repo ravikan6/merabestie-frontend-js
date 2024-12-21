@@ -177,7 +177,7 @@ const Checkout = () => {
         }
       }
       // Step 1: Create Order on Backend
-      const response = await fetch(`${API_URL}/create-order`, {
+      const response = await fetch(`${API_URL}/cart/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: (total + shipping) * 100, currency: 'INR', userId: userId }), // Amount in paise
@@ -194,7 +194,7 @@ const Checkout = () => {
         order_id: order.id,
         handler: async function (response) {
           // Step 3: Verify Payment and Place Order
-          const verificationResponse = await fetch(`${API_URL}/verify-payment`, {
+          const verificationResponse = await fetch(`${API_URL}/cart/verify-payment`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -240,7 +240,7 @@ const Checkout = () => {
     }));
 
     try {
-      const response = await fetch(`${API_URL}/place-order`, {
+      const response = await fetch(`${API_URL}/cart/place-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

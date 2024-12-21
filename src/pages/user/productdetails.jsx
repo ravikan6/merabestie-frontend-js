@@ -134,12 +134,19 @@ const ProductDetail = () => {
       navigate('/login');
       return;
     }
-
+  
     if (stockStatus?.stock === 0) {
       toast.error('Sorry, this product is currently out of stock');
       return;
     }
-
+  
+    // Ensure quantity is a number before sending to the server
+    const validQuantity = parseInt(quantity, 10); // Ensure `quantity` is a number
+    if (isNaN(validQuantity) || validQuantity <= 0) {
+      toast.error('Invalid quantity');
+      return;
+    }
+  
     try {
       const response = await fetch(`${API_URL}/cart/addtocart`, {
         method: 'POST',
@@ -149,12 +156,12 @@ const ProductDetail = () => {
         body: JSON.stringify({
           userId,
           productId,
-          quantity
+          quantity: validQuantity, // Send valid quantity here
         }),
       });
-      
+  
       const data = await response.json();
-      
+  
       if (data.success) {
         toast.success(
           <div className="flex items-center cursor-pointer" onClick={() => navigate('/cart')}>
@@ -162,13 +169,15 @@ const ProductDetail = () => {
           </div>
         );
       } else {
-        toast.error('Product not saved to cart');
+        toast.error(data.message || 'Product not saved to cart');
       }
     } catch (error) {
       toast.error('Error adding product to cart');
       console.error('Error adding to cart:', error);
     }
   };
+  
+  
 
   const handleWriteReview = () => {
     setShowReviewDialog(true);

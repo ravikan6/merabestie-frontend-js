@@ -11,6 +11,9 @@ const Product = () => {
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({
+    name: '',
+    category: '',
+    price: '',
     inStockValue: '',
     soldStockValue: ''
   });
@@ -68,6 +71,9 @@ const Product = () => {
   const handleEdit = (product) => {
     setEditingId(product.productId);
     setEditValues({
+      name: product.name || '',
+      category: product.category || '',
+      price: product.price || 0,
       inStockValue: product.inStockValue || 0,
       soldStockValue: product.soldStockValue || 0
     });
@@ -82,6 +88,9 @@ const Product = () => {
         },
         body: JSON.stringify({
           productId,
+          name: editValues.name || '',
+          category: editValues.category || '',
+          price: editValues.price || 0,
           inStockValue: editValues.inStockValue || 0,
           soldStockValue: editValues.soldStockValue || 0
         })
@@ -93,32 +102,6 @@ const Product = () => {
       }
     } catch (error) {
       console.error('Error updating stock values:', error);
-    }
-  };
-
-  const handleVisibilityChange = async (productId, newVisibility) => {
-    try {
-      const response = await fetch(`${API_URL}/update-visibility`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          productId,
-          visibility: newVisibility === 'true'
-        })
-      });
-
-      if (response.ok) {
-        // Update local state after successful API call
-        setProducts(products.map(product => 
-          product.productId === productId 
-            ? {...product, visibility: newVisibility === 'true'}
-            : product
-        ));
-      }
-    } catch (error) {
-      console.error('Error updating visibility:', error);
     }
   };
 
@@ -155,9 +138,9 @@ const Product = () => {
 
   return (
     <div className="flex">
-    <Helmet>
-      <title>Products | Admin | Mera Bestie</title>
-    </Helmet>
+      <Helmet>
+        <title>Products | Admin | Mera Bestie</title>
+      </Helmet>
       <Sidebar />
       <div className="flex-1 p-8 ml-[5rem] lg:ml-64 bg-pink-50 min-h-screen">
         <div className="mb-6 flex justify-between items-center">
@@ -204,12 +187,6 @@ const Product = () => {
                     <ArrowUpDown size={14} className="ml-1" />
                   </div>
                 </th>
-                <th onClick={() => handleSort('rating')} className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
-                  <div className="flex items-center">
-                    Rating
-                    <ArrowUpDown size={14} className="ml-1" />
-                  </div>
-                </th>
                 <th onClick={() => handleSort('inStockValue')} className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer">
                   <div className="flex items-center">
                     In Stock
@@ -222,31 +199,47 @@ const Product = () => {
                     <ArrowUpDown size={14} className="ml-1" />
                   </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Visibility</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.map((product) => (
                 <tr key={product.productId}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
-                        <img className="h-10 w-10 rounded-full object-cover" src={product.img || '-'} alt="" />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{product.name || '-'}</div>
-                      </div>
-                    </div>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {editingId === product.productId ? (
+                      <input
+                        type="text"
+                        className="w-20 border rounded px-2 py-1"
+                        value={editValues.name}
+                        onChange={(e) => setEditValues({...editValues, name: e.target.value})}
+                      />
+                    ) : (
+                      product.name || '-'
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.category || '-'}
+                    {editingId === product.productId ? (
+                      <input
+                        type="text"
+                        className="w-20 border rounded px-2 py-1"
+                        value={editValues.category}
+                        onChange={(e) => setEditValues({...editValues, category: e.target.value})}
+                      />
+                    ) : (
+                      product.category || '-'
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.price || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.rating || '-'}
+                    {editingId === product.productId ? (
+                      <input
+                        type="number"
+                        className="w-20 border rounded px-2 py-1"
+                        value={editValues.price}
+                        onChange={(e) => setEditValues({...editValues, price: e.target.value})}
+                      />
+                    ) : (
+                      product.price || '-'
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {editingId === product.productId ? (
@@ -271,16 +264,6 @@ const Product = () => {
                     ) : (
                       product.soldStockValue || '-'
                     )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <select
-                      className="border rounded px-2 py-1 bg-white"
-                      value={product.visibility?.toString() || 'false'}
-                      onChange={(e) => handleVisibilityChange(product.productId, e.target.value)}
-                    >
-                      <option value="true">Visible</option>
-                      <option value="false">Hidden</option>
-                    </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {editingId === product.productId ? (
