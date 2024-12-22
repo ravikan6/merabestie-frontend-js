@@ -8,15 +8,19 @@ import { API_URL } from '../../constants';
 const Product = () => {
   const { sellerId } = useParams();
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [editValues, setEditValues] = useState({
+  let initEditValues = {
     name: '',
     category: '',
     price: '',
     inStockValue: '',
-    soldStockValue: ''
-  });
+    soldStockValue: '',
+    img: '',
+    rating: '',
+    visibility: ''
+  }
+  const [products, setProducts] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editValues, setEditValues] = useState(initEditValues);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [sortConfig, setSortConfig] = useState({
@@ -75,8 +79,16 @@ const Product = () => {
       category: product.category || '',
       price: product.price || 0,
       inStockValue: product.inStockValue || 0,
-      soldStockValue: product.soldStockValue || 0
+      soldStockValue: product.soldStockValue || 0,
+      img: product.img || '',
+      rating: product.rating || 0,
+      visibility: product.visibility || 'on'
     });
+  };
+
+  const handleCancle = () => {
+    setEditingId(null);
+    setEditValues(initEditValues);
   };
 
   const handleSave = async (productId) => {
@@ -88,11 +100,7 @@ const Product = () => {
         },
         body: JSON.stringify({
           productId,
-          name: editValues.name || '',
-          category: editValues.category || '',
-          price: editValues.price || 0,
-          inStockValue: editValues.inStockValue || 0,
-          soldStockValue: editValues.soldStockValue || 0
+          ...editValues
         })
       });
 
@@ -156,6 +164,11 @@ const Product = () => {
     product.productId?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditValues({ ...editValues, [name]: value });
+  };
 
   return (
     <div className="flex">
@@ -226,81 +239,27 @@ const Product = () => {
               {filteredProducts.map((product) => (
                 <tr key={product.productId}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {editingId === product.productId ? (
-                      <input
-                        type="text"
-                        className="w-20 border rounded px-2 py-1"
-                        value={editValues.name}
-                        onChange={(e) => setEditValues({ ...editValues, name: e.target.value })}
-                      />
-                    ) : (
-                      product.name || '-'
-                    )}
+                    {product.name || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {editingId === product.productId ? (
-                      <input
-                        type="text"
-                        className="w-20 border rounded px-2 py-1"
-                        value={editValues.category}
-                        onChange={(e) => setEditValues({ ...editValues, category: e.target.value })}
-                      />
-                    ) : (
-                      product.category || '-'
-                    )}
+                    {product.category || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {editingId === product.productId ? (
-                      <input
-                        type="number"
-                        className="w-20 border rounded px-2 py-1"
-                        value={editValues.price}
-                        onChange={(e) => setEditValues({ ...editValues, price: e.target.value })}
-                      />
-                    ) : (
-                      product.price || '-'
-                    )}
+                    {product.price || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {editingId === product.productId ? (
-                      <input
-                        type="number"
-                        className="w-20 border rounded px-2 py-1"
-                        value={editValues.inStockValue}
-                        onChange={(e) => setEditValues({ ...editValues, inStockValue: e.target.value })}
-                      />
-                    ) : (
-                      product.inStockValue || '-'
-                    )}
+                    {product.inStockValue || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {editingId === product.productId ? (
-                      <input
-                        type="number"
-                        className="w-20 border rounded px-2 py-1"
-                        value={editValues.soldStockValue}
-                        onChange={(e) => setEditValues({ ...editValues, soldStockValue: e.target.value })}
-                      />
-                    ) : (
-                      product.soldStockValue || '-'
-                    )}
+                    {product.soldStockValue || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {editingId === product.productId ? (
-                      <button
-                        onClick={() => handleSave(product.productId)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Save size={18} />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(product)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Pencil size={18} />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleEdit(product)}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      <Pencil size={18} />
+                    </button>
                     <button
                       onClick={() => handleDelete(product.productId)}
                       className="text-red-600 hover:text-red-900 ml-2.5"
@@ -314,6 +273,85 @@ const Product = () => {
           </table>
         </div>
       </div>
+      {editingId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Update Product</h2>
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name"
+              value={editValues.name}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="price"
+              placeholder="Price"
+              value={editValues.price}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="img"
+              placeholder="Image URL"
+              value={editValues.img}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <input
+              type="text"
+              name="category"
+              placeholder="Category"
+              value={editValues.category}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <input
+              type="number"
+              name="rating"
+              placeholder="Rating"
+              value={editValues.rating}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+              min={0}
+              max={5}
+            />
+            <input
+              type="number"
+              name="inStockValue"
+              placeholder="In Stock"
+              value={editValues.inStockValue}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <input
+              type="number"
+              name="soldStockValue"
+              placeholder="Sold Stock"
+              value={editValues.soldStockValue}
+              onChange={handleInputChange}
+              className="w-full mb-3 p-2 border rounded"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleCancle}
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSave(editingId)}
+                className="px-4 py-2 bg-pink-500 text-white rounded"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

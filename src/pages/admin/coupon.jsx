@@ -207,7 +207,6 @@ const CouponPage = () => {
                       <input
                         type="text"
                         value={couponData.code}
-                        readOnly
                         className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
                       />
                     </div>

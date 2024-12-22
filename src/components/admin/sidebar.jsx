@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { Package, ShoppingBag, MessageSquare, Users, Calendar, Menu, LayoutDashboard, LogOut, Ticket } from 'lucide-react';
+import { Package, ShoppingBag, MessageSquare, Users, Calendar, Menu, LayoutDashboard, LogOut, Ticket, Upload, ExternalLink } from 'lucide-react';
 import { API_URL } from '../../constants'
 
 const Sidebar = () => {
@@ -266,19 +266,21 @@ const Sidebar = () => {
                             + Add Product
                         </button>
 
-                        <button
-                            onClick={() => setShowImageDialog(true)}
-                            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-900 mb-2"
-                        >
-                            Upload Image
-                        </button>
+                        <div className='flex mb-2 items-center w-full justify-between gap-2'>
+                            <button
+                                onClick={() => setShowImageDialog(true)}
+                                className="w-1/2 bg-blue-600 flex items-center justify-center text-white py-2 rounded hover:bg-blue-900"
+                            >
+                                <Upload size={18} />
+                            </button>
 
-                        <Link
-                            to="/"
-                            className="w-full flex items-center justify-center bg-green-500 text-white py-2 rounded hover:bg-green-600 mb-2"
-                        >
-                            Go to Website
-                        </Link>
+                            <Link
+                                to="/"
+                                className="w-1/2 flex items-center justify-center bg-green-500 text-white py-2 rounded hover:bg-green-600"
+                            >
+                                <ExternalLink size={18} />
+                            </Link>
+                        </div>
 
                         <button
                             onClick={handleLogout}
