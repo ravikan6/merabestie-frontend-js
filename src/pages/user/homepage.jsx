@@ -215,19 +215,19 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <SEOComponent/>
+      <SEOComponent />
       <ScrollProgress />
       <Navbar />
-      
+
       <main className="mt-20">
         {/* Hero Carousel */}
         <div className="container mx-auto px-4 py-6">
           <div className="relative h-[300px] rounded-xl overflow-hidden">
             <div className="absolute inset-0 flex transition-transform duration-700 ease-in-out"
-                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
               {carouselSlides.map((slide, index) => (
                 <div key={index} className="relative w-full h-full flex-shrink-0">
-                  <img 
+                  <img
                     src={slide.image}
                     alt={slide.title}
                     className="w-full h-full object-cover"
@@ -259,10 +259,10 @@ const HomePage = () => {
         {/* Product Grids */}
         <ProductGrid title="Best Selling Products" products={products} />
         <ProductGrid title="Explore Our Products" products={products} />
-        
+
         {/* New Arrivals Section with new grid layout */}
         <NewArrivalsGrid />
-        
+
         <ProductGrid title="Gifts for Couples" products={products} />
         <ProductGrid title="Stationary" products={products} />
         <ProductGrid title="Greeting Cards" products={products} />

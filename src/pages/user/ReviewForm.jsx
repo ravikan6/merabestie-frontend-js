@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
+import { API_URL } from '../../constants';
 
 const ReviewForm = ({ productId, onClose, onSubmitSuccess }) => {
   const [rating, setRating] = useState(0);
@@ -9,7 +10,7 @@ const ReviewForm = ({ productId, onClose, onSubmitSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/reviews/save-review', {
+      const response = await fetch(`${API_URL}/reviews/save-review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

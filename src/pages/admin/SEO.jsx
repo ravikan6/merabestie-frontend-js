@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 
 import Sidebar from '../../components/admin/sidebar';
+import { API_URL } from '../../constants';
 
 const SEO = () => {
   const { sellerId } = useParams();
@@ -26,7 +27,7 @@ const SEO = () => {
       }
 
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
+        const response = await fetch(`${API_URL}/admin/verify-seller`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -35,7 +36,7 @@ const SEO = () => {
         });
 
         const data = await response.json();
-        
+
         if (data.loggedIn === 'loggedin') {
           fetchSEOComponents();
         } else {
@@ -52,7 +53,7 @@ const SEO = () => {
 
   const fetchSEOComponents = async () => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seo/getSEOComponents');
+      const response = await fetch(`${API_URL}/seo/getSEOComponents`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setSeoComponents(data);
@@ -88,14 +89,14 @@ const SEO = () => {
     return sortableComponents;
   }, [seoComponents, sortConfig]);
 
-  const filteredSEOComponents = sortedSEOComponents.filter(component => 
+  const filteredSEOComponents = sortedSEOComponents.filter(component =>
     component.pageName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     component.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleAddSEO = async (formData) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seo/saveSEOComponents', {
+      const response = await fetch(`${API_URL}/seo/saveSEOComponents`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +117,7 @@ const SEO = () => {
 
   const handleEditSEO = async (formData) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seo/editSEOComponents', {
+      const response = await fetch(`${API_URL}/seo/editSEOComponents`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ const SEO = () => {
 
   const handleDeleteSEO = async (pageName) => {
     try {
-      const response = await fetch(`https://ecommercebackend-8gx8.onrender.com/seo/deleteSEOComponents?pageName=${pageName}`, {
+      const response = await fetch(`${API_URL}/seo/deleteSEOComponents?pageName=${pageName}`, {
         method: 'DELETE',
       });
       const data = await response.json();
@@ -258,7 +259,7 @@ const SEO = () => {
         <div className="mb-6 flex justify-between items-center">
           <div className="relative">
             <div className={`flex items-center ${isSearchExpanded ? 'w-full md:w-64' : 'w-10 md:w-64'} transition-all duration-300`}>
-              <button 
+              <button
                 className="md:hidden absolute left-2 z-10"
                 onClick={() => setIsSearchExpanded(!isSearchExpanded)}
               >
@@ -269,9 +270,8 @@ const SEO = () => {
               <input
                 type="text"
                 placeholder="Search by page name or title..."
-                className={`search-input ${
-                  isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
-                }`}
+                className={`search-input ${isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
+                  }`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
