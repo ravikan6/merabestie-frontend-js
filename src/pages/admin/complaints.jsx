@@ -66,7 +66,7 @@ const Complaints = () => {
 
   const fetchComplaints = async () => {
     try {
-      const response = await fetch(`${API_URL}/get-complaints`);
+      const response = await fetch(`${API_URL}/complaints/get-complaints`);
       const data = await response.json();
       setComplaints(data.complaints);
     } catch (error) {

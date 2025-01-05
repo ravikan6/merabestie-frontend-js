@@ -32,7 +32,7 @@ const Customers = () => {
         });
 
         const data = await response.json();
-        
+
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -90,10 +90,10 @@ const Customers = () => {
       });
 
       if (response.ok) {
-        setCustomers(prevCustomers => 
-          prevCustomers.map(customer => 
-            customer.userId === userId 
-              ? {...customer, accountStatus: newStatus}
+        setCustomers(prevCustomers =>
+          prevCustomers.map(customer =>
+            customer.userId === userId
+              ? { ...customer, accountStatus: newStatus }
               : customer
           )
         );
@@ -105,7 +105,7 @@ const Customers = () => {
 
   const sortedCustomers = React.useMemo(() => {
     if (!Array.isArray(customers)) return [];
-    
+
     let sortableCustomers = [...customers];
     if (sortConfig.key !== null) {
       sortableCustomers.sort((a, b) => {
@@ -133,18 +133,18 @@ const Customers = () => {
       const userId = customer.userId?.toString().toLowerCase() || '';
       const customerName = customer.name?.toLowerCase() || '';
       const customerEmail = customer.email?.toLowerCase() || '';
-      
-      return userId.includes(searchLower) || 
-             customerName.includes(searchLower) || 
-             customerEmail.includes(searchLower);
+
+      return userId.includes(searchLower) ||
+        customerName.includes(searchLower) ||
+        customerEmail.includes(searchLower);
     });
   }, [sortedCustomers, searchQuery]);
 
   return (
     <div className="flex">
-    <Helmet>
-      <title>Customers | Admin | Mera Bestie</title>
-    </Helmet>
+      <Helmet>
+        <title>Customers | Admin | Mera Bestie</title>
+      </Helmet>
       <Sidebar />
       <div className="flex-1 p-8 ml-[5rem] lg:ml-64 bg-pink-50 min-h-screen">
         <div className="mb-6 flex justify-center">

@@ -1,154 +1,167 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch, FaTimes } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Search, X, AlertCircle, Loader } from 'lucide-react';
+import { debounce } from 'lodash';
 import { API_URL } from '../../../constants'
 
 const SearchBar = () => {
-    const [inputValue, setInputValue] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showResults, setShowResults] = useState(false);
-    const searchRef = useRef(null);
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            if (inputValue.trim()) {
-                fetchProducts(inputValue);
-            } else {
-                setSearchResult([]);
-            }
-        }, 400);
+  const [inputValue, setInputValue] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const searchRef = useRef(null);
 
-        return () => clearTimeout(delayDebounceFn);
-    }, [inputValue]);
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (searchRef.current && !searchRef.current.contains(event.target)) {
-                setShowResults(false);
-            }
-        };
+  const debouncedFetch = useCallback(
+    debounce(async (input) => {
+      if (!input.trim()) {
+        setSearchResults([]);
+        setIsLoading(false);
+        return;
+      }
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+      setIsLoading(true);
+      setError(null);
 
-    const fetchProducts = async (input) => {
-        setIsLoading(true);
-        try {
-            const response = await fetch(`${API_URL}/get-product`);
-            const data = await response.json();
-            if (data.success) {
-                const validProducts = data.products.filter(product => 
-                    (product.name.toLowerCase().includes(input.toLowerCase()) || 
-                     product.category.toLowerCase().includes(input.toLowerCase())) &&
-                    product.price && 
-                    product.img && 
-                    product._id &&
-                    product.visibility === "on" 
-                );
-                setSearchResult(validProducts);
-                setShowResults(validProducts.length > 0);
-            }
-        } catch (error) {
-            console.error('Error fetching products:', error);
-        } finally {
-            setIsLoading(false);
+      try {
+        const response = await fetch(`${API_URL}/get-product`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
+
+        const data = await response.json();
+        if (data.success) {
+          const validProducts = data.products.filter(product =>
+            (product.name?.toLowerCase().includes(input.toLowerCase()) ||
+              product.category?.toLowerCase().includes(input.toLowerCase()) ||
+              product.description?.toLowerCase().includes(input.toLowerCase())) &&
+            product.price &&
+            product.img &&
+            product._id &&
+            product.visibility === "on" || true
+          );
+
+          setSearchResults(validProducts);
+          setIsOpen(validProducts.length > 0);
+        }
+      } catch (error) {
+        setError('Failed to fetch products. Please try again.');
+        console.error('Error fetching products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300),
+    []
+  );
+
+  useEffect(() => {
+    debouncedFetch(inputValue);
+    return () => debouncedFetch.cancel();
+  }, [inputValue, debouncedFetch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
     };
 
-    const clearSearch = () => {
-        setInputValue('');
-        setSearchResult([]);
-        setShowResults(false);
-    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    return (
-        <div ref={searchRef} className="relative w-full max-w-md mx-auto">
-            <div className="relative">
-                <input
-                    type="text"
-                    placeholder="Search gifts for your loved ones..."
-                    className="w-full px-4 py-3 pl-10 pr-10 border-2 border-pink-200 rounded-full 
-                               focus:outline-none focus:ring-2 focus:ring-pink-500 
-                               transition-all duration-300 ease-in-out"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onFocus={() => setShowResults(searchResult.length > 0)}
-                />
-                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-400" />
-                {inputValue && (
-                    <button 
-                        onClick={clearSearch} 
-                        className="absolute right-3 top-1/2 -translate-y-1/2 
-                                   text-pink-400 hover:text-pink-600 transition-colors"
-                    >
-                        <FaTimes />
-                    </button>
-                )}
-            </div>
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    setIsOpen(true);
+  };
 
-            {/* Search Results */}
-            <AnimatePresence>
-                {showResults && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute z-50 w-full mt-2 bg-white 
-                                   shadow-lg rounded-xl overflow-hidden 
-                                   max-h-96 overflow-y-auto"
-                    >
-                        {isLoading ? (
-                            <div className="p-4 text-center text-pink-500">
-                                Searching...
-                            </div>
-                        ) : searchResult.length === 0 ? (
-                            <div className="p-4 text-center text-gray-500">
-                                No products found
-                            </div>
-                        ) : (
-                            <ul>
-                                {searchResult.map((result) => (
-                                    <Link 
-                                        to={`/${result._id}`} 
-                                        key={result._id}
-                                        onClick={() => setShowResults(false)}
-                                    >
-                                        <li 
-                                            className="flex items-center p-3 
-                                                       hover:bg-pink-50 
-                                                       transition-colors 
-                                                       cursor-pointer 
-                                                       border-b last:border-b-0"
-                                        >
-                                            <img 
-                                                src={result.img} 
-                                                alt={result.name} 
-                                                className="w-16 h-16 object-cover rounded-md mr-4"
-                                            />
-                                            <div>
-                                                <h3 className="font-semibold text-gray-800">
-                                                    {result.name}
-                                                </h3>
-                                                <p className="text-pink-600 font-medium">
-                                                    {result.price}
-                                                </p>
-                                                <span className="text-xs text-gray-500">
-                                                    {result.category}
-                                                </span>
-                                            </div>
-                                        </li>
-                                    </Link>
-                                ))}
-                            </ul>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+  const clearSearch = () => {
+    setInputValue('');
+    setSearchResults([]);
+    setIsOpen(false);
+    setError(null);
+  };
+
+  const handleResultClick = () => {
+    setIsOpen(false);
+    setInputValue('');
+  };
+
+  return (
+    <div ref={searchRef} className="relative w-full max-w-md mx-auto">
+      <div className="relative">
+        <input
+          type="search"
+          role="searchbox"
+          aria-label="Search products"
+          placeholder="Search gifts for your loved ones..."
+          className="w-full px-4 py-3 pl-10 pr-10 border-2 border-pink-200 rounded-full 
+                     focus:outline-none focus:ring-2 focus:ring-pink-500 
+                     transition-all duration-300 ease-in-out placeholder:text-gray-400"
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={() => setIsOpen(true)}
+        />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-400 h-5 w-5" />
+        {inputValue && (
+          <button
+            onClick={clearSearch}
+            aria-label="Clear search"
+            className="absolute right-3 top-1/2 -translate-y-1/2 
+                       text-pink-400 hover:text-pink-600 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-2 bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
+          <div className="max-h-96 overflow-y-auto">
+            {isLoading ? (
+              <div className="p-6 text-center text-pink-500 flex items-center justify-center space-x-2">
+                <Loader className="h-5 w-5 animate-spin" />
+                <span>Searching for products...</span>
+              </div>
+            )
+              : (
+                <ul className="divide-y divide-gray-100">
+                  {searchResults.map((result) => (
+                    <li key={result._id} className="transition-colors hover:bg-gray-50">
+                      <Link
+                        to={`/${result.productId}`}
+                        onClick={handleResultClick}
+                        className="flex items-center p-4 group"
+                      >
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          <img
+                            src={result.img[0] || result.img}
+                            alt={result.name}
+                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 truncate group-hover:text-pink-600 transition-colors">
+                            {result.name}
+                          </h3>
+                          <p className="text-pink-600 font-medium mt-1">
+                            ${typeof result.price === 'number' ? result.price.toFixed(2) : result.price}
+                          </p>
+                          <span className="text-xs text-gray-500 capitalize mt-1 block">
+                            {result.category}
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default SearchBar;

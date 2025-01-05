@@ -1,366 +1,540 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Package, ShoppingBag, MessageSquare, Users, Calendar, Menu, LayoutDashboard, LogOut, Ticket, Upload, ExternalLink, UploadCloud } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import {
+  Package,
+  ShoppingBag,
+  MessageSquare,
+  Users,
+  Calendar,
+  Menu,
+  LayoutDashboard,
+  LogOut,
+  Ticket,
+  Upload,
+  X,
+  Loader2,
+  Image as ImageIcon,
+} from "lucide-react";
 import { API_URL } from '../../constants'
 
+
 const Sidebar = () => {
-    const navigate = useNavigate();
-    const { sellerId } = useParams();
-    const [isOpen, setIsOpen] = useState(false);
-    const [showDialog, setShowDialog] = useState(false);
-    const [showImageDialog, setShowImageDialog] = useState(false)
-    const [productData, setProductData] = useState({
-        name: '',
-        price: '',
-        img: '',
-        category: '',
-        rating: 0,
-        productId: '',
-        inStockValue: 0,
-        soldStockValue: 0
-    });
-    const location = useLocation();
+  const navigate = useNavigate();
+  const { sellerId } = useParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [productData, setProductData] = useState({
+    name: "",
+    price: "",
+    img: [],
+    category: "",
+    description: "",
+    rating: 0,
+    productId: "",
+    inStockValue: 0,
+    soldStockValue: 0,
+  });
+  const location = useLocation();
 
-    // Set initial state based on screen size and update on resize
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth >= 1024) { // lg breakpoint
-                setIsOpen(true);
-            } else {
-                setIsOpen(false);
-            }
-        };
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    };
 
-        // Set initial state
-        handleResize();
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-        // Add resize listener
-        window.addEventListener('resize', handleResize);
+  const menuItems = [
+    {
+      name: "Dashboard",
+      icon: <LayoutDashboard className="w-5 h-5" />,
+      path: `/admin/${sellerId}`,
+    },
+    {
+      name: "Products",
+      icon: <Package className="w-5 h-5" />,
+      path: `/admin/products/${sellerId}`,
+    },
+    {
+      name: "Orders",
+      icon: <ShoppingBag className="w-5 h-5" />,
+      path: `/admin/orders/${sellerId}`,
+    },
+    {
+      name: "Complaints",
+      icon: <MessageSquare className="w-5 h-5" />,
+      path: `/admin/complaints/${sellerId}`,
+    },
+    {
+      name: "Customers",
+      icon: <Users className="w-5 h-5" />,
+      path: `/admin/customers/${sellerId}`,
+    },
+    {
+      name: "Calendar",
+      icon: <Calendar className="w-5 h-5" />,
+      path: `/admin/calendar/${sellerId}`,
+    },
+    {
+      name: "Coupons",
+      icon: <Ticket className="w-5 h-5" />,
+      path: `/seller/coupons/${sellerId}`
+    },
+    {
+      name: "Reviews",
+      icon: <MessageSquare className="w-5 h-5" />,
+      path: `/admin/reviews/${sellerId}`,
+    },
+    {
+      name: "SEO",
+      icon: <MessageSquare className="w-5 h-5" />,
+      path: `/admin/SEO/${sellerId}`,
+    }
+  ];
 
-        // Cleanup
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+  const toggleSidebar = () => {
+    if (window.innerWidth < 1024) {
+      setIsOpen(!isOpen);
+    }
+  };
 
-    const menuItems = [
-        { name: 'Dashboard', icon: <LayoutDashboard />, path: `/admin/${sellerId}` },
-        { name: 'Products', icon: <Package />, path: `/admin/products/${sellerId}` },
-        { name: 'Orders', icon: <ShoppingBag />, path: `/admin/orders/${sellerId}` },
-        { name: 'Complaints', icon: <MessageSquare />, path: `/admin/complaints/${sellerId}` },
-        { name: 'Customers', icon: <Users />, path: `/admin/customers/${sellerId}` },
-        { name: 'Calendar', icon: <Calendar />, path: `/admin/calendar/${sellerId}` },
-        { name: 'Coupons', icon: <Ticket />, path: `/seller/coupons/${sellerId}` },
-    ];
+  const generateProductId = () => {
+    const randomId = Math.floor(100000 + Math.random() * 900000).toString();
+    setProductData({ ...productData, productId: randomId });
+  };
 
-    const toggleSidebar = () => {
-        if (window.innerWidth < 1024) { // Only allow toggle on smaller screens
-            setIsOpen(!isOpen);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProductData({ ...productData, [name]: value });
+  };
+
+  const handleImageSelect = (e) => {
+    if (e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+      setUploadStatus('');
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedFile) {
+      setUploadStatus('Please select an image first');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    try {
+      setIsUploading(true);
+      setUploadStatus('Uploading...');
+
+      const response = await fetch(`${API_URL}/image/image-upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setProductData(prev => ({
+          ...prev,
+          img: [...prev.img, data.imageUrl]
+        }));
+        setUploadStatus('Upload successful');
+        setSelectedFile(null);
+        const fileInput = document.getElementById('imageInput');
+        if (fileInput) fileInput.value = '';
+      } else {
+        setUploadStatus('Upload failed: ' + data.message);
+      }
+    } catch (error) {
+      setUploadStatus('Upload failed: ' + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setProductData(prev => ({
+      ...prev,
+      img: prev.img.filter((_, index) => index !== indexToRemove)
+    }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(
+        `${API_URL}/admin/logout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ sellerId }),
         }
-    };
+      );
 
-    const generateProductId = () => {
-        const randomId = Math.floor(100000 + Math.random() * 900000).toString();
-        setProductData({ ...productData, productId: randomId });
-    };
+      if (response.ok) {
+        navigate("/seller/login");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setProductData({ ...productData, [name]: value });
-    };
+  const handleSubmit = async () => {
+    try {
+      if (productData.img.length === 0) {
+        setUploadStatus('Please upload at least one image');
+        return;
+      }
 
-    const handleLogout = async () => {
-        try {
-            const response = await fetch(`${API_URL}/admin/logout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ sellerId })
-            });
-
-            if (response.ok) {
-                navigate('/seller/login');
-            }
-        } catch (error) {
-            console.error('Error logging out:', error);
+      const response = await fetch(
+        `${API_URL}/create-product`,
+        {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
         }
-    };
+      );
 
-    const handleSubmit = async () => {
-        try {
-            const response = await fetch(`${API_URL}/create-product`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(productData)
-            });
+      if (response.ok) {
+        setShowDialog(false);
+        setProductData({
+          name: "",
+          price: "",
+          img: [],
+          category: "",
+          description: "",
+          rating: 0,
+          productId: "",
+          inStockValue: 0,
+          soldStockValue: 0,
+        });
+      } else {
+        const errorData = await response.json();
+        setUploadStatus('Error creating product: ' + errorData.message);
+      }
+    } catch (error) {
+      console.error("Error creating product:", error);
+      setUploadStatus('Error creating product: ' + error.message);
+    }
+  };
 
-            if (response.ok) {
-                setShowDialog(false);
-                setProductData({
-                    name: '',
-                    price: '',
-                    img: '',
-                    category: '',
-                    rating: 0,
-                    productId: '',
-                    inStockValue: 0,
-                    soldStockValue: 0
-                });
-            }
-        } catch (error) {
-            console.error('Error creating product:', error);
-        }
-    };
+  return (
+    <>
+      {/* Toggle button */}
+      <button
+        onClick={toggleSidebar}
+        className="fixed top-4 left-4 p-2 rounded-lg bg-white shadow-lg hover:bg-gray-100 lg:hidden z-50 transition-colors"
+      >
+        <Menu className="w-6 h-6 text-gray-600" />
+      </button>
 
-    return (
-        <>
-            {/* Toggle button for small screens */}
-            <button
-                onClick={toggleSidebar}
-                className="fixed top-4 left-4 p-2 rounded-lg hover:bg-pink-200 lg:hidden z-50"
-            >
-                <Menu size={24} />
-            </button>
-
-            {showDialog && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-96">
-                        <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Product Name"
-                            value={productData.name}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                        />
-                        <input
-                            type="text"
-                            name="price"
-                            placeholder="Price"
-                            value={productData.price}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                        />
-                        <input
-                            type="text"
-                            name="img"
-                            placeholder="Image URL"
-                            value={productData.img}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                        />
-                        <input
-                            type="text"
-                            name="category"
-                            placeholder="Category"
-                            value={productData.category}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                        />
-                        <input
-                            type="number"
-                            name="rating"
-                            placeholder="Rating"
-                            value={productData.rating}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                            min={0}
-                            max={5}
-                        />
-                        <div className="flex mb-3">
-                            <input
-                                type="text"
-                                name="productId"
-                                placeholder="Product ID"
-                                value={productData.productId}
-                                readOnly
-                                className="w-2/3 p-2 border rounded-l"
-                            />
-                            <button
-                                onClick={generateProductId}
-                                className="w-1/3 bg-pink-500 text-white p-2 rounded-r"
-                            >
-                                Generate
-                            </button>
-                        </div>
-                        <input
-                            type="number"
-                            name="inStockValue"
-                            placeholder="In Stock"
-                            value={productData.inStockValue}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                        />
-                        <input
-                            type="number"
-                            name="soldStockValue"
-                            placeholder="Sold Stock"
-                            value={productData.soldStockValue}
-                            onChange={handleInputChange}
-                            className="w-full mb-3 p-2 border rounded"
-                        />
-                        <div className="flex justify-end gap-2">
-                            <button
-                                onClick={() => setShowDialog(false)}
-                                className="px-4 py-2 bg-gray-300 rounded"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSubmit}
-                                className="px-4 py-2 bg-pink-500 text-white rounded"
-                            >
-                                Save Product
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <div className={`fixed left-0 top-0 h-screen bg-pink-50 shadow-lg transition-all duration-300 flex flex-col 
-                lg:translate-x-0 lg:w-64
-                ${isOpen ? 'w-64' : 'w-20'}`}
-            >
-                <div className="flex items-center p-4">
-                    {isOpen && (
-                        <div className="text-2xl font-bold text-gray-800">
-                            Mera Bestie
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex-grow flex items-center">
-                    <ul className="space-y-2 p-4 w-full">
-                        {menuItems.map((item) => (
-                            <li key={item.path}>
-                                <Link
-                                    to={item.path}
-                                    className={`flex items-center p-2 rounded-lg transition-colors
-                                        ${location.pathname === item.path
-                                            ? 'bg-pink-200 text-pink-800'
-                                            : 'text-gray-700 hover:bg-pink-100'}
-                                        ${isOpen ? 'justify-start space-x-4' : 'justify-center'}`}
-                                >
-                                    <span className="text-xl">{item.icon}</span>
-                                    {isOpen && <span>{item.name}</span>}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="mt-auto">
-                    <div className={`p-4 ${isOpen ? 'block' : 'hidden'}`}>
-                        <p className="text-center text-gray-600 mb-2">
-                            Please, manage your products through the button below.
-                        </p>
-
-                        <button
-                            onClick={() => setShowDialog(true)}
-                            className="w-full bg-pink-300 text-white py-2 rounded hover:bg-pink-400 mb-2"
-                        >
-                            + Add Product
-                        </button>
-
-                        <div className='flex mb-2 items-center w-full justify-between gap-2'>
-                            <button
-                                onClick={() => setShowImageDialog(true)}
-                                className="w-1/2 bg-blue-600 flex items-center justify-center text-white py-2 rounded hover:bg-blue-900"
-                            >
-                                <UploadCloud size={18} />
-                            </button>
-
-                            <Link
-                                to="/"
-                                className="w-1/2 flex items-center justify-center bg-green-500 text-white py-2 rounded hover:bg-green-600"
-                            >
-                                <ExternalLink size={18} />
-                            </Link>
-                        </div>
-
-                        <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center justify-center bg-red-500 text-white py-2 rounded hover:bg-red-600"
-                        >
-                            <LogOut className="mr-2" size={18} />
-                            Logout
-                        </button>
-                    </div>
-
-                    <footer className={`text-center text-gray-500 text-sm p-4 ${isOpen ? 'block' : 'hidden'}`}>
-                        Mera Bestie Admin Dashboard © 2024
-                    </footer>
-                </div>
+      {/* Product Dialog */}
+      {showDialog && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-in fade-in-0 zoom-in-95">
+            {/* Header */}
+            <div className="border-b p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-gray-800">Add New Product</h2>
+                <button
+                  onClick={() => setShowDialog(false)}
+                  className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
             </div>
 
-            {showImageDialog && (
-                <Uploader onClose={() => setShowImageDialog(false)} />
-            )}
-        </>
-    );
-};
+            <div className="p-6 space-y-8">
+              {/* Image Upload Section */}
+              <section className="space-y-4">
+                <h3 className="text-base font-semibold text-gray-800">Product Images</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <label className="flex-1 cursor-pointer group">
+                      <div className="flex items-center justify-center h-36 px-4 transition-all border-2 border-dashed rounded-xl border-gray-300 group-hover:border-pink-400 group-hover:bg-pink-50/50">
+                        <div className="flex flex-col items-center space-y-2 text-center">
+                          <ImageIcon className="w-8 h-8 text-gray-400 group-hover:text-pink-500" />
+                          <span className="text-sm text-gray-500 group-hover:text-pink-600">
+                            {selectedFile ? selectedFile.name : 'Drop image here or click to browse'}
+                          </span>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelect}
+                          className="hidden"
+                          disabled={isUploading}
+                        />
+                      </div>
+                    </label>
+                    <button
+                      onClick={handleImageUpload}
+                      disabled={!selectedFile || isUploading}
+                      className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${!selectedFile || isUploading
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-pink-500 hover:bg-pink-600 text-white shadow-sm'
+                        }`}
+                    >
+                      {isUploading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Upload className="w-5 h-5" />
+                      )}
+                      <span className="font-medium">{isUploading ? 'Uploading...' : 'Upload'}</span>
+                    </button>
+                  </div>
 
-const Uploader = ({ onClose }) => {
-    const [loading, setLoading] = useState(false);
-    const [uploadedUrl, setUploadedUrl] = useState('');
+                  {uploadStatus && (
+                    <p className={`text-sm font-medium ${uploadStatus.includes('failed') || uploadStatus.includes('Error')
+                        ? 'text-red-600'
+                        : 'text-green-600'
+                      }`}>
+                      {uploadStatus}
+                    </p>
+                  )}
 
-    const handleFileUpload = async (event) => {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('myFile', file);
+                  {/* Image Preview Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {productData.img.map((url, index) => (
+                      <div key={index} className="relative group rounded-xl overflow-hidden shadow-sm">
+                        <img
+                          src={url}
+                          alt={`Product ${index + 1}`}
+                          className="w-full h-24 object-cover"
+                        />
+                        <button
+                          onClick={() => removeImage(index)}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+                        >
+                          <X className="w-6 h-6 text-white" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
 
-        setLoading(true);
+              {/* Product Form */}
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Product Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={productData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                    placeholder="Enter product name"
+                  />
+                </div>
 
-        try {
-            const response = await fetch(`${API_URL}/upload`, {
-                method: 'POST',
-                body: formData,
-            });
-            const result = await response.json();
-            if (result.success) {
-                setUploadedUrl(result.fileUrl);
-            } else {
-                setUploadedUrl(result.error)
-            }
-        } catch (error) {
-            console.error('Error uploading file:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Price</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={productData.price}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                    placeholder="Enter price"
+                  />
+                </div>
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(uploadedUrl);
-    };
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Category</label>
+                  <select
+                    name="category"
+                    value={productData.category}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="fashion">Fashion</option>
+                    <option value="gift-items">Gift Items</option>
+                    <option value="greeting-cards">Greeting Cards</option>
+                    <option value="stationary">Stationary</option>
+                  </select>
+                </div>
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg w-96 relative">
-                <button className="absolute top-2 right-2 text-gray-500" onClick={onClose}>X</button>
-                <h2 className="text-xl font-bold mb-4">Upload File</h2>
-                {loading ? (
-                    <div className="text-center">Loading...</div>
-                ) : (
-                    <div className="text-center">
-                        <input type="file" onChange={handleFileUpload} className="mb-4" />
-                        <p className="text-gray-500">Drag & drop a file here, or click to select a file</p>
-                    </div>
-                )}
-                {uploadedUrl && (
-                    <div className="mt-4">
-                        <p className="text-green-500">File uploaded successfully:</p>
-                        <a href={uploadedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500">{uploadedUrl}</a>
-                        <button onClick={copyToClipboard} className="ml-2 px-2 py-1 bg-blue-500 text-white rounded">Copy URL</button>
-                    </div>
-                )}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Rating</label>
+                  <input
+                    type="number"
+                    name="rating"
+                    value={productData.rating}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                    min={0}
+                    max={5}
+                    step={0.1}
+                    placeholder="Enter rating (0-5)"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Product ID</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="productId"
+                      value={productData.productId}
+                      readOnly
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 outline-none"
+                      placeholder="Click generate to create ID"
+                    />
+                    <button
+                      onClick={generateProductId}
+                      className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors shadow-sm font-medium"
+                    >
+                      Generate
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Stock Information</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      type="number"
+                      name="inStockValue"
+                      value={productData.inStockValue}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                      placeholder="In Stock"
+                    />
+                    <input
+                      type="number"
+                      name="soldStockValue"
+                      value={productData.soldStockValue}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                      placeholder="Sold Stock"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  name="description"
+                  value={productData.description}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-shadow outline-none"
+                  rows={4}
+                  placeholder="Enter product description"
+                />
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex items-center justify-end gap-3 pt-6 border-t">
+                <button
+                  onClick={() => setShowDialog(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isUploading}
+                  className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:bg-pink-300 shadow-sm font-medium"
+                >
+                  Save Product
+                </button>
+              </div>
             </div>
+          </div>
         </div>
-    );
-};
+      )}
 
+      {/* Sidebar */}
+      <div
+        className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-pink-50 to-white shadow-xl transition-all duration-300 
+                  lg:translate-x-0 lg:w-64 z-40
+                  ${isOpen ? "translate-x-0 w-64" : "-translate-x-full w-64 lg:translate-x-0 lg:w-20"}`}
+      >
+        <div className="flex items-center justify-between p-6 border-b">
+          {isOpen && (
+            <div className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+              Mera Bestie
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col h-[calc(100vh-160px)] justify-between">
+          <nav className="flex-1 px-4 py-6">
+            <ul className="space-y-1">
+              {menuItems.map((item) => (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center px-4 py-3 rounded-lg transition-all
+                      ${location.pathname === item.path
+                        ? "bg-pink-100 text-pink-600"
+                        : "text-gray-600 hover:bg-pink-50 hover:text-pink-500"
+                      }
+                      ${isOpen ? "justify-start space-x-3" : "justify-center"}`}
+                  >
+                    {item.icon}
+                    {isOpen && <span className="font-medium">{item.name}</span>}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="p-4 space-y-4">
+            {isOpen && (
+              <>
+                <button
+                  onClick={() => setShowDialog(true)}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
+                >
+                  <Package className="w-5 h-5 mr-2" />
+                  Add Product
+                </button>
+
+                <Link
+                  to="/"
+                  className="w-full flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  Go to Website
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  <LogOut className="w-5 h-5 mr-2" />
+                  Logout
+                </button>
+
+                <div className="text-center text-gray-400 text-sm">
+                  Mera Bestie Admin © 2024
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default Sidebar;

@@ -205,7 +205,7 @@ const OrderCard = ({ order, fetchProductDetails }) => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 className="bg-gradient-to-br from-pink-100 to-purple-100 p-4 rounded-lg flex items-center space-x-4 shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <img src={product.img} alt={product.name} className="w-20 h-20 object-cover rounded-md" />
+                <img src={product.img[0] ? product.img[0] : product.img} alt={product.name} className="w-20 h-20 object-cover rounded-md" />
                 <div>
                   <p className="text-gray-800 font-semibold">{product.name}</p>
                   <p className="text-pink-600 font-medium">{product.price}</p>

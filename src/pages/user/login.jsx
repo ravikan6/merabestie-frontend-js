@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import Navbar from "../../components/user/navbar/navbar";
 import { motion } from 'framer-motion';
 import { Helmet } from "react-helmet";
+import SEOComponent from "../../components/SEO/SEOComponent";
 
 const Login = () => {
   const { login } = useAuth();
@@ -18,7 +19,7 @@ const Login = () => {
     try {
       const response = await login(emailOrMobile, password);
       if (response === 'Login successful') {
-        window.location.href = '/';
+        window.location.href = '/cart';
       }
     } catch (error) {
       setError('Login failed. Please check your credentials.');
@@ -28,9 +29,7 @@ const Login = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Login | Mera Bestie</title>
-      </Helmet>
+      <SEOComponent/>
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center p-4 mt-16">
         <div className="fixed top-0 left-0 w-full z-50">
           <Navbar />

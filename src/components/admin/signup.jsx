@@ -16,7 +16,7 @@ const AdminSignup = () => {
   const [error, setError] = useState('');
   const [showVerificationOptions, setShowVerificationOptions] = useState(false);
   const [verificationMethod, setVerificationMethod] = useState(null);
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(['','','','','','']);
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
@@ -100,7 +100,7 @@ const AdminSignup = () => {
     if (resendDisabled) return;
 
     try {
-      const response = await fetch(`${API_URL}/admin/seller/send-otp`, {
+      const response = await fetch(`${API_URL}/seller/send-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -125,7 +125,6 @@ const AdminSignup = () => {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
       if (value && index < 5) {
         const nextInput = document.getElementById(`otp-${index + 1}`);
         if (nextInput) nextInput.focus();
@@ -173,11 +172,11 @@ const AdminSignup = () => {
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-pink-100 px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <motion.div
+          <motion.div 
             className="max-w-md mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden sm:max-w-lg lg:max-w-xl"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{
+            transition={{ 
               duration: 0.5,
               type: "spring",
               stiffness: 120
@@ -296,12 +295,12 @@ const AdminSignup = () => {
                     <button
                       onClick={handleResendOtp}
                       disabled={resendDisabled}
-                      className={`w-full py-2 text-xs sm:text-sm ${resendDisabled
-                        ? 'text-gray-400 cursor-not-allowed'
+                      className={`w-full py-2 text-xs sm:text-sm ${resendDisabled 
+                        ? 'text-gray-400 cursor-not-allowed' 
                         : 'text-pink-500 hover:text-pink-600'}`}
                     >
-                      {resendTimer > 0
-                        ? `Resend OTP in ${resendTimer}s`
+                      {resendTimer > 0 
+                        ? `Resend OTP in ${resendTimer}s` 
                         : 'Resend OTP'}
                     </button>
                   </>

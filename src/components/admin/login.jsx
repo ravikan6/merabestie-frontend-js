@@ -23,16 +23,16 @@ const AdminLogin = () => {
 
     try {
       const response = await fetch(`${API_URL}/admin/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          sellerId,
-          emailOrPhone,
-          password,
-        }),
-      }
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sellerId,
+            emailOrPhone,
+            password,
+          }),
+        }
       );
 
       const data = await response.json();

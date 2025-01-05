@@ -254,7 +254,7 @@ const Orders = () => {
                     {order.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${order.price}
+                    Rs.{order.price}
                   </td>
                   <td className="px-6 py-4">
                     <OrderStatusBadge status={order.status} />

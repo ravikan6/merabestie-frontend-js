@@ -100,7 +100,7 @@ function GiftBox() {
                 <Link to={`/${product.productId}`} className="block">
                   <div
                     className="h-48 bg-cover bg-center"
-                    style={{ backgroundImage: `url('${product.img}')` }}
+                    style={{ backgroundImage: `url('${product.img[0]?product.img[0]:product.img}')` }}
                   ></div>
                   <div className="p-4 text-center">
                     <h4 className="font-bold text-pink-800">{product.name}</h4>

@@ -12,7 +12,7 @@ import Checkout from "./pages/user/checkout";
 import Product from "./pages/admin/product";
 import LoginPage from "./pages/admin/login";
 import SellerPage from "./pages/admin/signup";
-import Complaints from "./pages/admin/complaints"; 
+import Complaints from "./pages/admin/complaints";
 import Orders from "./pages/admin/order";
 import Customers from "./pages/admin/customer";
 import CalendarPage from "./pages/admin/calendar";
@@ -23,6 +23,8 @@ import CouponPage from "./pages/admin/coupon";
 import DashboardPage from "./pages/admin/daashboard";
 import Order from "./pages/user/orders";
 import GiftBox from "./pages/user/gift-box";
+import Reviews from "./pages/admin/review";
+import SEO from "./pages/admin/SEO";
 
 function App() {
   return (
@@ -54,6 +56,9 @@ function App() {
           <Route path="/admin/orders/:sellerId" element={<Orders />} />
           <Route path="/admin/customers/:sellerId" element={<Customers />} />
           <Route path="/admin/calendar/:sellerId" element={<CalendarPage />} />
+          <Route path="/admin/reviews/:sellerId" element={<Reviews />} />
+          <Route path="/admin/SEO/:sellerId" element={<SEO />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

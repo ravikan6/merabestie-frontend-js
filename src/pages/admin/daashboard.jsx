@@ -41,7 +41,7 @@ const DashboardPage = () => {
                 });
 
                 const data = await response.json();
-                
+
                 if (data.loggedIn !== 'loggedin') {
                     navigate('/seller/login');
                 }

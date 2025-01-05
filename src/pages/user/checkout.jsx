@@ -5,17 +5,19 @@ import confetti from 'canvas-confetti';
 import { Helmet } from "react-helmet";
 import Navbar from '../../components/user/navbar/navbar';
 import { useLocation } from 'react-router-dom';
+import Footer from '../../components/user/footer/footer';
+import SEOComponent from '../../components/SEO/SEOComponent';
 import { API_URL, APP_DESC, APP_NAME, RAZORPAY_API } from '../../constants'
 
 const Checkout = () => {
-  const location = useLocation()
-  const total = parseFloat(location.state?.total || 0)
+  const location = useLocation();
+  const total = parseFloat(location.state?.total || 0);
+  const discount = parseFloat(location.state?.discount || 0);
   const [shipping, setShipping] = useState(0)
-  const discount = parseFloat(location.state?.discount || 0)
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [address, setAddress] = useState({
     street: '',
@@ -25,6 +27,7 @@ const Checkout = () => {
     phone: ''
   });
   const [saveAddress, setSaveAddress] = useState(false);
+
   useEffect(() => {
     const savedAddress = localStorage.getItem('savedShippingAddress');
     const savedSaveAddressPreference = localStorage.getItem('saveAddressPreference');
@@ -55,56 +58,99 @@ const Checkout = () => {
     }
   }, [total])
 
+  const getCartItemsFromLocalStorage = () => {
+    try {
+      const localCart = localStorage.getItem('guestCart');
+      if (localCart) {
+        return JSON.parse(localCart);
+      }
+    } catch (error) {
+      console.error('Error parsing local cart:', error);
+    }
+    return [];
+  };
+
   const fetchCartItems = async () => {
     const userId = sessionStorage.getItem('userId');
-    if (!userId) {
-      navigate('/login');
-      return;
-    }
 
     try {
-      const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId })
-      });
-      const cartData = await cartResponse.json();
-
-      if (!cartData.success) {
-        setLoading(false);
-        return;
-      }
-
-      // Get unique product IDs
-      const uniqueProductIds = [...new Set(cartData.cart.productsInCart.map(item => item.productId))];
-
-      // Get product details for each unique product
-      const productPromises = uniqueProductIds.map(async (productId) => {
-        const productResponse = await fetch(`${API_URL}/:productId`, {
+      if (userId) {
+        // Fetch from backend if user is logged in
+        const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ productId })
+          body: JSON.stringify({ userId })
         });
-        const productData = await productResponse.json();
+        const cartData = await cartResponse.json();
+        console.log(cartData)
 
-        if (productData.success) {
-          return {
-            ...productData.product,
-            quantity: cartData.cart.productsInCart.find(item => item.productId === productId).productQty, // Set quantity from the count map
-            cartItemId: cartData.cart.productsInCart.find(item => item.productId === productId)._id
-          };
+        if (!cartData.success) {
+          setLoading(false);
+          return;
         }
-        return null;
-      });
 
-      const products = await Promise.all(productPromises);
-      setCartItems(products.filter(product => product !== null));
-      setLoading(false);
+        const groupedItems = cartData.cart.productsInCart.reduce((acc, item) => {
+          if (!acc[item.productId]) {
+            acc[item.productId] = {
+              productId: item.productId,
+              productQty: item.productQty
+            };
+          } else {
+            acc[item.productId].productQty += item.productQty;
+          }
+          return acc;
+        }, {});
+
+        const productPromises = Object.values(groupedItems).map(async (item) => {
+          console.log(item)
+          const productResponse = await fetch(`${API_URL}/:productId`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: item.productId })
+          });
+          const productData = await productResponse.json();
+
+          if (productData.success) {
+            return {
+              ...productData.product,
+              quantity: item.productQty
+            };
+          }
+          return null;
+        });
+
+        const products = await Promise.all(productPromises);
+        setCartItems(products.filter(product => product !== null));
+      } else {
+        // Get cart items from localStorage if user is not logged in
+        const localCartItems = getCartItemsFromLocalStorage();
+
+        // Fetch product details for local cart items
+        const productPromises = localCartItems.map(async (item) => {
+          const productResponse = await fetch(`${API_URL}/:productId`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: item.productId })
+          });
+          const productData = await productResponse.json();
+
+          if (productData.success) {
+            return {
+              ...productData.product,
+              quantity: item.quantity
+            };
+          }
+          return null;
+        });
+
+        const products = await Promise.all(productPromises);
+        setCartItems(products.filter(product => product !== null));
+      }
     } catch (err) {
+      console.error('Error fetching cart items:', err);
+    } finally {
       setLoading(false);
     }
   };
@@ -126,15 +172,11 @@ const Checkout = () => {
   const handleSaveAddressToggle = (e) => {
     const isChecked = e.target.checked;
     setSaveAddress(isChecked);
-
-    // Save address preference
     localStorage.setItem('saveAddressPreference', JSON.stringify(isChecked));
 
     if (isChecked) {
-      // Save current address to localStorage
       localStorage.setItem('savedShippingAddress', JSON.stringify(address));
     } else {
-      // Remove saved address from localStorage
       localStorage.removeItem('savedShippingAddress');
     }
   };
@@ -144,6 +186,7 @@ const Checkout = () => {
   };
 
   const calculateSubtotal = () => {
+    console.log(cartItems)
     return cartItems.reduce((total, item) => {
       return total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity);
     }, 0);
@@ -154,78 +197,79 @@ const Checkout = () => {
     return (subtotal * (discount / 100)).toFixed(2);
   };
 
-
   const payOrder = async () => {
-    setIsProcessing(true);
-    try {
-      const userId = sessionStorage.getItem('userId');
-
-      if (saveAddress) {
-        try {
-          await fetch(`${API_URL}/update-address`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              userId,
-              address: Object.values(address).join(', ')
-            })
-          });
-        } catch (err) {
-          throw new Error("An Error ocured while saving Address.")
-        }
-      }
-      // Step 1: Create Order on Backend
-      const response = await fetch(`${API_URL}/cart/create-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: (total + shipping) * 100, currency: 'INR', userId: userId }), // Amount in paise
-      });
-      const order = await response.json();
-
-      // Step 2: Open Razorpay Checkout
-      const options = {
-        key: RAZORPAY_API, // Replace with your Razorpay Key ID
-        amount: order?.amount,
-        currency: order?.currency,
-        name: APP_NAME,
-        description: APP_DESC,
-        order_id: order.id,
-        handler: async function (response) {
-          // Step 3: Verify Payment and Place Order
-          const verificationResponse = await fetch(`${API_URL}/cart/verify-payment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
-
-          const verificationResult = await verificationResponse.json();
-
-          if (verificationResult.success) {
-            await handlePlaceOrder();
-          } else {
-            alert('Payment verification failed.');
+    const userId = sessionStorage.getItem('userId');
+    if (userId) {
+      setIsProcessing(true);
+      try {
+        if ((saveAddress && userId)) {
+          try {
+            await fetch(`${API_URL}/update-address`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                userId,
+                address: Object.values(address).join(', ')
+              })
+            });
+          } catch (err) {
+            throw new Error("An Error ocured while saving Address.")
           }
-        },
-        theme: {
-          color: '#db2777',
-        },
-      };
+        }
+        // Step 1: Create Order on Backend
+        const response = await fetch(`${API_URL}/cart/create-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: (total + shipping) * 100, currency: 'INR', userId: userId }), // Amount in paise
+        });
+        const order = await response.json();
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error('Checkout Error:', error);
-      alert('An error occurred during checkout.');
-    } finally {
-      setIsProcessing(false);
+        // Step 2: Open Razorpay Checkout
+        const options = {
+          key: RAZORPAY_API, // Replace with your Razorpay Key ID
+          amount: order?.amount,
+          currency: order?.currency,
+          name: APP_NAME,
+          description: APP_DESC,
+          order_id: order.id,
+          handler: async function (response) {
+            // Step 3: Verify Payment and Place Order
+            const verificationResponse = await fetch(`${API_URL}/cart/verify-payment`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verificationResult = await verificationResponse.json();
+
+            if (verificationResult.success) {
+              await handlePlaceOrder();
+            } else {
+              alert('Payment verification failed.');
+            }
+          },
+          theme: {
+            color: '#db2777',
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } catch (error) {
+        console.error('Checkout Error:', error);
+        alert('An error occurred during checkout.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
-  }
+    navigate('/login');
+  };
 
   const handlePlaceOrder = async () => {
     const userId = sessionStorage.getItem('userId');
@@ -235,45 +279,57 @@ const Checkout = () => {
     const time = now.toLocaleTimeString('en-GB');
 
     const productsOrdered = cartItems.map(item => ({
-      productId: item.productId,
+      productId: item._id,
       productQty: item.quantity
     }));
 
     try {
-      const response = await fetch(`${API_URL}/cart/place-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          userId,
-          date,
-          time,
-          address: Object.values(address).join(', '),
-          price: total,
-          productsOrdered,
-          status: "Processing",
-          paymentStatus: "Paid",
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.message === 'Order placed successfully') {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
+      if (userId) {
+        // Place order through backend if logged in
+        const response = await fetch(`${API_URL}/cart/place-order`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId,
+            date,
+            time,
+            address: Object.values(address).join(', '),
+            price: total,
+            productsOrdered,
+            status: "Processing",
+            paymentStatus: "Paid",
+          })
         });
 
-        setShowSuccess(true);
-        setTimeout(() => {
-          navigate('/cart');
-        }, 5000);
+        const data = await response.json();
+
+        if (data.message === 'Order placed successfully') {
+          handleOrderSuccess();
+        }
+      } else {
+        // Handle guest checkout
+        // Clear local cart after successful order
+        // localStorage.removeItem('guestCart');
+        // handleOrderSuccess();
       }
     } catch (err) {
-      throw new Error("Got error after payment process.")
+      console.error('Error placing order:', err);
     }
+  };
+
+  const handleOrderSuccess = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    setShowSuccess(true);
+    setTimeout(() => {
+      navigate('/cart');
+    }, 5000);
   };
 
   if (loading) {
@@ -286,20 +342,15 @@ const Checkout = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Helmet>
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <title>Checkout | Mera Bestie</title>
-      </Helmet>
+      <SEOComponent />
       <Navbar />
 
-      {/* Increased spacing between Navbar and the container */}
-      <div className="container mx-auto px-4 py-8 mt-12">
+      <div className="container mx-auto px-4 py-14 mt-12">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Address Section */}
-          <div className="md:w-2/3 bg-white rounded-2xl shadow-lg p-8">
+          <div className="md:w-2/3 bg-white rounded-2xl p-8">
             <div className="flex items-center mb-6 space-x-4">
-              <MapPin className="text-pink-600 w-8 h-8" />
-              <h2 className="text-3xl font-bold text-gray-800">Shipping Details</h2>
+              <h2 className="text-2xl font-normal tracking-widest">SHIPPING DETAILS</h2>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -374,10 +425,11 @@ const Checkout = () => {
               </div>
             </div>
           </div>
+
+          {/* Order Summary Section */}
           <div className="md:w-1/3 bg-white rounded-2xl shadow-lg p-8">
             <div className="flex items-center mb-6 space-x-4">
-              <ShoppingCart className="text-pink-600 w-8 h-8" />
-              <h2 className="text-3xl font-bold text-gray-800">Order Summary</h2>
+              <h2 className="text-4xl font-thin">Order Summary</h2>
             </div>
 
             <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -385,7 +437,7 @@ const Checkout = () => {
                 <div key={item._id} className="flex justify-between items-center border-b pb-4">
                   <div className="flex items-center space-x-4">
                     <img
-                      src={item.img}
+                      src={item.img[0] || item.img}
                       alt={item.name}
                       className="w-20 h-20 object-cover rounded-lg shadow-sm"
                     />
@@ -394,7 +446,7 @@ const Checkout = () => {
                       <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                     </div>
                   </div>
-                  <p className="font-medium text-gray-800">
+                  <p className="font-medium text-gray-800 ">
                     Rs. {(parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity).toFixed(2)}
                   </p>
                 </div>
@@ -407,7 +459,6 @@ const Checkout = () => {
                 <span className="font-semibold">Rs. {calculateSubtotal().toFixed(2)}</span>
               </div>
 
-              {/* Discount Section */}
               {discount > 0 && (
                 <div className="flex justify-between text-gray-700">
                   <div className="flex items-center space-x-2">
@@ -427,15 +478,9 @@ const Checkout = () => {
                 </span>
               </div>
 
-              {
-                shipping > 0 ? <div className='text-gray-500 text-end text-xs flex justify-end my-1'>
-                  <p className='text-end text-underline'> Free shipping on orders above Rs. 499.</p>
-                </div> : null
-              }
-
               <div className="flex justify-between text-xl font-bold border-t pt-4">
                 <span>Total</span>
-                <span className="text-pink-600">Rs. {(total + shipping).toFixed(2)}</span>
+                <span className="font-thin tracking-widest">Rs. {total.toFixed(2)}</span>
               </div>
 
               <button
@@ -452,6 +497,8 @@ const Checkout = () => {
             </div>
           </div>
         </div>
+
+        {/* Success Modal */}
         {showSuccess && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-2xl p-10 text-center shadow-2xl">

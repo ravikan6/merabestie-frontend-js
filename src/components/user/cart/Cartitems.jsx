@@ -88,7 +88,7 @@ const CartItems = () => {
   const handleQuantityChange = async (itemId, change) => {
     const item = cartItems.find(item => item._id === itemId);
     const newQuantity = item.quantity + change;
-
+  
     if (newQuantity >= 1) {
       // Update the quantity in the UI immediately
       const updatedItems = cartItems.map(item => {
@@ -98,10 +98,10 @@ const CartItems = () => {
         return item;
       });
       setCartItems(updatedItems);
-
+  
       try {
         const userId = sessionStorage.getItem('userId');
-        const response = await fetch(`${API_URL}/cart/update-quantity`, {
+        const response = await fetch(`${API_URL}/cart/update-quantit`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ const CartItems = () => {
             productQty: newQuantity
           })
         });
-
+  
         const data = await response.json();
         if (!data.success) {
           console.error('Failed to update quantity:', data.message);
@@ -124,14 +124,14 @@ const CartItems = () => {
       }
     }
   };
-
-
+  
+  
   const handleRemoveItem = async (itemId) => {
     const item = cartItems.find(item => item._id === itemId);
-
+  
     // Immediately update the UI by removing the item
     setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
-
+  
     try {
       const userId = sessionStorage.getItem('userId');
       const response = await fetch(`${API_URL}/cart/delete-items`, {
@@ -144,7 +144,7 @@ const CartItems = () => {
           productId: item.productId
         })
       });
-
+      
       const data = await response.json();
       if (!data.success) {
         console.error('Failed to remove item from server:', data.message);
@@ -155,7 +155,7 @@ const CartItems = () => {
       // Note: We're not reverting the UI change here
     }
   };
-
+  
 
   const calculateTotal = () => {
     const subtotal = cartItems.reduce((total, item) => {
@@ -215,8 +215,8 @@ const CartItems = () => {
       <div className="bg-white shadow-md rounded-lg p-6 flex flex-col items-center justify-center">
         <img src={emptyCart} alt="Empty Cart" className="w-48 h-48 mb-4" />
         <p className="text-lg text-gray-600 mb-4">{error || 'Your cart is empty'}</p>
-        <Link
-          to="/shop"
+        <Link 
+          to="/shop" 
           className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors"
         >
           Continue Shopping
@@ -240,7 +240,7 @@ const CartItems = () => {
               <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full">
                 <div className="w-20 h-20 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
                   <img
-                    src={item.img}
+                    src={item.img[0]?item.img[0]:item.img}
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />
@@ -251,10 +251,10 @@ const CartItems = () => {
                     <p className="text-sm text-gray-500">{item.description}</p>
                   </div>
                   <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 w-full mt-4 md:mt-0">
-                    <span className="font-medium text-base">Rs. {item.price}</span>
-
+                    <span className="font-medium text-base">₹{item.price}</span>
+                    
                     <div className="flex items-center border rounded-md">
-                      <button
+                      <button 
                         onClick={() => handleQuantityChange(item._id, -1)}
                         className="px-2 py-1 text-gray-600 hover:bg-gray-100"
                       >
@@ -262,23 +262,21 @@ const CartItems = () => {
                       </button>
                       <input
                         type="text"
-                        value={item.quantity}
+                        value={item.quantity }
                         readOnly
                         className="w-12 text-center border-none text-sm"
                       />
-                      <button
+                      <button 
                         onClick={() => handleQuantityChange(item._id, 1)}
                         className="px-2 py-1 text-gray-600 hover:bg-gray-100"
                       >
                         <FontAwesomeIcon icon={faPlus} className="text-sm" />
                       </button>
                     </div>
-
-                    <span className="font-medium text-base">
-                      Rs. {(parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)).toFixed(2)}
-                    </span>
-
-                    <button
+                    
+                  
+                    
+                    <button 
                       onClick={() => handleRemoveItem(item._id)}
                       className="text-red-500 hover:text-red-700 transition-colors"
                     >
@@ -305,46 +303,46 @@ const CartItems = () => {
               onChange={(e) => setVoucher(e.target.value)}
               className="flex-grow border rounded-md px-3 py-2"
             />
-            <button
-              className="w-full md:w-auto bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600"
+            <button 
+              className="w-full md:w-auto bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600" 
               onClick={handleVoucherRedeem}
             >
               Redeem
             </button>
           </div>
-
+          
           {discountInfo.message && (
             <div className={`text-sm ${discountInfo.code ? 'text-green-600' : 'text-red-600'}`}>
               {discountInfo.message}
             </div>
           )}
-
+          
           <div className="space-y-2 text-sm">
             <div className="flex flex-col md:flex-row justify-between">
               <span>Subtotal</span>
-              <span>Rs. {cartItems.reduce((total, item) =>
-                total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)),
+              <span>₹{cartItems.reduce((total, item) => 
+                total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)), 
                 0).toFixed(2)}</span>
             </div>
             {discountInfo.percentage > 0 && (
               <div className="flex flex-col md:flex-row justify-between text-green-600">
                 <span>Discount ({discountInfo.percentage}%)</span>
-                <span>- Rs. {(cartItems.reduce((total, item) =>
-                  total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)),
+                <span>- ₹{(cartItems.reduce((total, item) => 
+                  total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * (item.quantity || 1)), 
                   0) * (discountInfo.percentage / 100)).toFixed(2)}</span>
               </div>
             )}
             <div className="flex flex-col md:flex-row justify-between">
               <span>Shipping</span>
-              <span>Rs. 0.00</span>
+              <span>₹ 0.00</span>
             </div>
             <div className="flex flex-col md:flex-row justify-between font-bold text-base">
               <span>Total</span>
-              <span>Rs. {calculateTotal()}</span>
+              <span>₹ {calculateTotal()}</span>
             </div>
           </div>
-
-          <Link
+          
+          <Link 
             to={'/checkout'}
             state={{
               total: calculateTotal(),

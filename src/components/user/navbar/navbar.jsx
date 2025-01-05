@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  RiSearchLine, 
-  RiCloseLine, 
-  RiMenu3Line, 
-  RiUser3Line, 
-  RiShoppingCart2Line, 
+import {
+  RiSearchLine,
+  RiCloseLine,
+  RiMenu3Line,
+  RiUser3Line,
+  RiShoppingCart2Line,
   RiGift2Line,
   RiHome2Line,
   RiStore2Line,
@@ -29,7 +29,7 @@ const ProfessionalNavbar = () => {
   const location = useLocation();
   const [cartItemCount, setCartItemCount] = useState(0);
   const navigate = useNavigate();
-  
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
@@ -44,15 +44,15 @@ const ProfessionalNavbar = () => {
       try {
         const cartResponse = await fetch(
           `${API_URL}/cart/get-cart`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ userId })
-          }
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId })
+        }
         );
         const cartData = await cartResponse.json();
-        
+
         if (cartData.success && cartData.cart && Array.isArray(cartData.cart.productsInCart)) {
           const total = cartData.cart.productsInCart.reduce((sum, item) => sum + 1, 0);
           setCartItemCount(total);
@@ -167,15 +167,13 @@ const ProfessionalNavbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md" : "bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-md" : "bg-transparent"
+        }`}
     >
       {/* Top Promotional Banner */}
       <div
-        className={`bg-pink-600 text-white py-2 text-center text-xs transition-all duration-300 ${
-          scrolled ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-auto"
-        }`}
+        className={`bg-pink-600 text-white py-2 text-center text-xs transition-all duration-300 ${scrolled ? "opacity-0 h-0 overflow-hidden" : "opacity-100 h-auto"
+          }`}
       >
         <div className="max-w-[1200px] mx-auto px-4 flex items-center justify-center">
           <RiGift2Line className="mr-2" />
@@ -200,7 +198,7 @@ const ProfessionalNavbar = () => {
 
             {/* Logo */}
             <Link
-              to="/"
+              to="/HomePage"
               className="text-2xl flex items-center hover:opacity-80 transition mx-auto lg:mx-0"
             >
               <span className="font-['Bodoni_MT'] font-bold text-3xl sm:text-4xl text-pink-600">
@@ -210,16 +208,16 @@ const ProfessionalNavbar = () => {
 
             {/* Desktop Navigation Links */}
             <div className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
-              {navLinks.map(({ path, name }) => (
+              {navLinks.map(({ path, name, icon: Icon }) => (
                 <Link
                   key={path}
                   to={path}
-                  className={`px-4 py-2 mx-2 ${
-                    isActive(path)
-                      ? "text-pink-600"
-                      : "text-gray-800 hover:text-pink-600"
-                  } transition-colors duration-200`}
+                  className={`px-4 py-2 mx-2 flex items-center ${isActive(path)
+                    ? "text-pink-600"
+                    : "text-gray-800 hover:text-pink-600"
+                    } transition-colors duration-200`}
                 >
+                  <Icon className="w-5 h-5 mr-2" />
                   {name}
                 </Link>
               ))}
@@ -350,11 +348,10 @@ const ProfessionalNavbar = () => {
                 >
                   <Link
                     to={path}
-                    className={`flex items-center px-6 py-3 ${
-                      isActive(path)
-                        ? "text-pink-600 bg-pink-50"
-                        : "text-gray-800 hover:bg-pink-50 hover:text-pink-600"
-                    } transition-colors duration-200`}
+                    className={`flex items-center px-6 py-3 ${isActive(path)
+                      ? "text-pink-600 bg-pink-50"
+                      : "text-gray-800 hover:bg-pink-50 hover:text-pink-600"
+                      } transition-colors duration-200`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Icon className="w-5 h-5 mr-3" />
@@ -394,7 +391,7 @@ const ProfessionalNavbar = () => {
               ref={searchRef}
             >
               <SearchBar />
-              <button 
+              <button
                 onClick={toggleSearch}
                 className="mt-2 text-gray-600 hover:text-pink-600 flex items-center justify-center w-full"
               >
