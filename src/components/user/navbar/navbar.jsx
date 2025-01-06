@@ -24,6 +24,7 @@ const ProfessionalNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -162,7 +163,13 @@ const ProfessionalNavbar = () => {
     { path: "/HomePage", name: "HOME", icon: RiHome2Line },
     { path: "/shop", name: "SHOP", icon: RiStore2Line },
     { path: "/contact", name: "CONTACT", icon: RiPhoneLine },
-    { path: "/about", name: "ABOUT", icon: RiInformationLine }
+  ];
+
+  const categories = [
+    { name: "Fashion", path: "/shop/fashion" },
+    { name: "Gift Items", path: "/shop/gift-items" },
+    { name: "Greeting Cards", path: "/shop/greeting-cards" },
+    { name: "Stationery", path: "/shop/stationery" },
   ];
 
   return (
@@ -209,17 +216,35 @@ const ProfessionalNavbar = () => {
             {/* Desktop Navigation Links */}
             <div className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
               {navLinks.map(({ path, name, icon: Icon }) => (
-                <Link
+                <div
                   key={path}
-                  to={path}
-                  className={`px-4 py-2 mx-2 flex items-center ${isActive(path)
-                    ? "text-pink-600"
-                    : "text-gray-800 hover:text-pink-600"
-                    } transition-colors duration-200`}
+                  className="relative"
+                  onMouseEnter={name === "SHOP" ? () => setIsShopDropdownOpen(true) : null}
+                  onMouseLeave={name === "SHOP" ? () => setIsShopDropdownOpen(false) : null}
                 >
-                  <Icon className="w-5 h-5 mr-2" />
-                  {name}
-                </Link>
+                  <button
+                    className={`px-4 py-2 mx-2 flex items-center ${isActive(path)
+                      ? "text-pink-600"
+                      : "text-gray-800 hover:text-pink-600"
+                      } transition-colors duration-200`}
+                  >
+                    <Icon className="w-5 h-5 mr-2" />
+                    {name}
+                  </button>
+                  {name === "SHOP" && isShopDropdownOpen && (
+                    <div className="absolute mt-2 bg-white border rounded-lg shadow-lg">
+                      {categories.map((category) => (
+                        <Link
+                          key={category.path}
+                          to={category.path}
+                          className="block px-4 py-2 hover:bg-pink-50"
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
@@ -296,13 +321,7 @@ const ProfessionalNavbar = () => {
                           <RiUserAddLine className="w-4 h-4 mr-2" />
                           Sign Up
                         </Link>
-                        <Link
-                          to='/seller/login'
-                          className="flex items-center px-4 py-2 hover:bg-pink-50 transition"
-                        >
-                          <RiStore2Line className="w-4 h-4 mr-2" />
-                          Seller
-                        </Link>
+                       
                       </>
                     )}
                   </motion.div>
