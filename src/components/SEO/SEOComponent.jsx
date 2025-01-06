@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../../constants";
 
-const SEOComponent = (extraData = <></>) => {
+const SEOComponent = ({ extraData = <></> }) => {
   const { pageName } = useParams(); // Get the page name from the URL params
 
   // Ensure pageName is always valid
