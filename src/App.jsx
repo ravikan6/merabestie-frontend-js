@@ -41,6 +41,8 @@ function App() {
           <Route path="/Signup" element={<Signup />} />
           {/* <Route path="/OccasionsPage" element={<OccasionsPage />} /> */}
           <Route path="/gift-boxes" element={<GiftBox />} />
+          <Route path="/gift-items" element={<GiftBox />} />
+          <Route path="/fashion" element={<GiftBox />} />
           <Route path="/books" element={<GiftBox />} />
           <Route path="/stationery" element={<GiftBox />} />
           <Route path="/cart" element={<ShoppingCartPage />} />
