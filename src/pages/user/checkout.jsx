@@ -267,8 +267,9 @@ const Checkout = () => {
       } finally {
         setIsProcessing(false);
       }
+    } else {
+      navigate('/login');
     }
-    navigate('/login');
   };
 
   const handlePlaceOrder = async () => {
