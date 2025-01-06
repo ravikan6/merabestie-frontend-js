@@ -160,16 +160,18 @@ const ProfessionalNavbar = () => {
   };
 
   const navLinks = [
-    { path: "/HomePage", name: "HOME", icon: RiHome2Line },
+    { path: "/", name: "HOME", icon: RiHome2Line },
     { path: "/shop", name: "SHOP", icon: RiStore2Line },
     { path: "/contact", name: "CONTACT", icon: RiPhoneLine },
-  ];
+  ]
 
   const categories = [
-    { name: "Fashion", path: "/shop/fashion" },
-    { name: "Gift Items", path: "/shop/gift-items" },
-    { name: "Greeting Cards", path: "/shop/greeting-cards" },
-    { name: "Stationery", path: "/shop/stationery" },
+    { name: "Fashion", path: "/fashion" },
+    { name: "Gift Items", path: "/gift-boxes" },
+    { name: "Books", path: "/books" },
+    { name: "Stationery", path: "/stationery" },
+    { name: "All Products", path: "/shop" },
+
   ];
 
   return (
