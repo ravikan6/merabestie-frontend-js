@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../../constants";
 
-const SEOComponent = () => {
+const SEOComponent = (extraData = <></>) => {
   const { pageName } = useParams(); // Get the page name from the URL params
 
   // Ensure pageName is always valid
@@ -64,6 +64,7 @@ const SEOComponent = () => {
       {seoData.twitterTitle && <meta name="twitter:title" content={seoData.twitterTitle} />}
       {seoData.twitterDescription && <meta name="twitter:description" content={seoData.twitterDescription} />}
       {seoData.twitterImage && <meta name="twitter:image" content={seoData.twitterImage} />}
+      {extraData}
     </Helmet>
   );
 };

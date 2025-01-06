@@ -342,7 +342,9 @@ const Checkout = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <SEOComponent />
+      <SEOComponent extraData={
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      } />
       <Navbar />
 
       <div className="container mx-auto px-4 py-14 mt-12">
