@@ -26,7 +26,7 @@ const SEO = () => {
       }
 
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
+        const response = await fetch('https://api.merabestie.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ const SEO = () => {
 
   const fetchSEOComponents = async () => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seo/getSEOComponents');
+      const response = await fetch('https://api.merabestie.com/seo/getSEOComponents');
       const data = await response.json();
       if (Array.isArray(data)) {
         setSeoComponents(data);
@@ -95,7 +95,7 @@ const SEO = () => {
 
   const handleAddSEO = async (formData) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seo/saveSEOComponents', {
+      const response = await fetch('https://api.merabestie.com/seo/saveSEOComponents', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const SEO = () => {
 
   const handleEditSEO = async (formData) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seo/editSEOComponents', {
+      const response = await fetch('https://api.merabestie.com/seo/editSEOComponents', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ const SEO = () => {
 
   const handleDeleteSEO = async (pageName) => {
     try {
-      const response = await fetch(`https://ecommercebackend-8gx8.onrender.com/seo/deleteSEOComponents?pageName=${pageName}`, {
+      const response = await fetch(`https://api.merabestie.com/seo/deleteSEOComponents?pageName=${pageName}`, {
         method: 'DELETE',
       });
       const data = await response.json();

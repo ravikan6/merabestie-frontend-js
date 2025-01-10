@@ -45,7 +45,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/signup', {
+      const response = await fetch('https://api.merabestie.com/seller/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -73,7 +73,7 @@ const AdminSignup = () => {
   const handleVerificationMethodSelect = async (method) => {
     setVerificationMethod(method);
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/send-otp', {
+      const response = await fetch('https://api.merabestie.com/seller/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ const AdminSignup = () => {
     if (resendDisabled) return;
     
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/send-otp', {
+      const response = await fetch('https://api.merabestie.com/seller/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -140,7 +140,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/verify-otp', {
+      const response = await fetch('https://api.merabestie.com/seller/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

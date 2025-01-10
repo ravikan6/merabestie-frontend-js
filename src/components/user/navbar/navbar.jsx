@@ -44,7 +44,7 @@ const ProfessionalNavbar = () => {
 
       try {
         const cartResponse = await fetch(
-          `https://ecommercebackend-8gx8.onrender.com/cart/get-cart`, {
+          `https://api.merabestie.com/cart/get-cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ const ProfessionalNavbar = () => {
       if (userId) {
         try {
           const response = await fetch(
-            `https://ecommercebackend-8gx8.onrender.com/auth/user/${userId}`
+            `https://api.merabestie.com/auth/user/${userId}`
           );
           const data = await response.json();
           setUserName(data.name);

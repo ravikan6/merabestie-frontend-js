@@ -23,7 +23,7 @@ const Reviews = () => {
       }
 
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
+        const response = await fetch('https://api.merabestie.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ const Reviews = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/reviews/get-reviews');
+      const response = await fetch('https://api.merabestie.com/reviews/get-reviews');
       const data = await response.json();
       if (data.success) {
         setReviews(data.reviews);

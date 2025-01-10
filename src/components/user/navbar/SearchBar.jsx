@@ -23,7 +23,7 @@ const SearchBar = () => {
       setError(null);
 
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/get-product');
+        const response = await fetch('https://api.merabestie.com/get-product');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

@@ -23,7 +23,7 @@ const Complaints = () => {
       }
 
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
+        const response = await fetch('https://api.merabestie.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ const Complaints = () => {
 
   const fetchComplaints = async () => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/complaints/get-complaints');
+      const response = await fetch('https://api.merabestie.com/complaints/get-complaints');
       const data = await response.json();
       setComplaints(data.complaints);
     } catch (error) {
@@ -75,7 +75,7 @@ const Complaints = () => {
 
   const handleStatusChange = async (complaintId, newStatus) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/update-complaint-status', {
+      const response = await fetch('https://api.merabestie.com/update-complaint-status', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

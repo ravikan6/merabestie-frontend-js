@@ -21,7 +21,7 @@ const ContactUs = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/complaints/post-complaints', {
+      const response = await fetch('https://api.merabestie.com/complaints/post-complaints', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

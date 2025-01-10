@@ -58,7 +58,7 @@ const HomePage = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/get-product');
+      const response = await fetch('https://api.merabestie.com/get-product');
       const data = await response.json();
       if (data.success) {
         setProducts(data.products);

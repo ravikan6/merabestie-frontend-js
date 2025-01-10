@@ -31,7 +31,7 @@ const DashboardPage = () => {
             }
 
             try {
-                const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
+                const response = await fetch('https://api.merabestie.com/admin/verify-seller', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

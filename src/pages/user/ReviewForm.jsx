@@ -9,7 +9,7 @@ const ReviewForm = ({ productId, onClose, onSubmitSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/reviews/save-review', {
+      const response = await fetch('https://api.merabestie.com/reviews/save-review', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

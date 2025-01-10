@@ -40,7 +40,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`https://ecommercebackend-8gx8.onrender.com/:productId`, {
+        const response = await fetch(`https://api.merabestie.com/:productId`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/reviews/find-reviews', {
+        const response = await fetch('https://api.merabestie.com/reviews/find-reviews', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const ProductDetail = () => {
 
   const fetchRelatedProducts = async (category) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/product/category', {
+      const response = await fetch('https://api.merabestie.com/product/category', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ const ProductDetail = () => {
     }
   
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/cart/addtocart', {
+      const response = await fetch('https://api.merabestie.com/cart/addtocart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

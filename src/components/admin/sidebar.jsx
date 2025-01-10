@@ -136,7 +136,7 @@ const Sidebar = () => {
       setIsUploading(true);
       setUploadStatus('Uploading...');
 
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/image/image-upload', {
+      const response = await fetch('https://api.merabestie.com/image/image-upload', {
         method: 'POST',
         body: formData,
       });
@@ -171,7 +171,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        "https://ecommercebackend-8gx8.onrender.com/admin/logout",
+        "https://api.merabestie.com/admin/logout",
         {
           method: "POST",
           headers: {
@@ -198,7 +198,7 @@ const Sidebar = () => {
       }
 
       const response = await fetch(
-        "https://ecommercebackend-8gx8.onrender.com/create-product",
+        "https://api.merabestie.com/create-product",
         {
           method: "POST",
           headers: {

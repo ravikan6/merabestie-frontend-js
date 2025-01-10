@@ -17,7 +17,7 @@ function GiftBox() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/product/category', {
+        const response = await fetch('https://api.merabestie.com/product/category', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

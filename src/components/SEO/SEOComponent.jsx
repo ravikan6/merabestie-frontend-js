@@ -28,7 +28,7 @@ const SEOComponent = () => {
   useEffect(() => {
     const fetchSeoData = async () => {
       try {
-        const response = await axios.post("https://ecommercebackend-8gx8.onrender.com/seo/fetchSEOComponents", { pageName: safePageName });
+        const response = await axios.post("https://api.merabestie.com/seo/fetchSEOComponents", { pageName: safePageName });
         if (response.data) {
           setSeoData((prevData) => ({
             ...prevData,

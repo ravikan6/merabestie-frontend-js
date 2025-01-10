@@ -20,7 +20,7 @@ const Dashboard = () => {
     const getOrderData = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch("https://ecommercebackend-8gx8.onrender.com/get-orders");
+            const response = await fetch("https://api.merabestie.com/get-orders");
             if (!response.ok) {
                 throw new Error('Failed to fetch orders');
             }

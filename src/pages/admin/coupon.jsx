@@ -29,7 +29,7 @@ const CouponPage = () => {
       }
 
       try {
-        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
+        const response = await fetch('https://api.merabestie.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ const CouponPage = () => {
 
   const fetchCoupons = async () => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/coupon/get-coupons');
+      const response = await fetch('https://api.merabestie.com/coupon/get-coupons');
       const data = await response.json();
       if (data.success) {
         setCoupons(data.coupons);
@@ -99,7 +99,7 @@ const CouponPage = () => {
 
   const handleDeleteCoupon = async (code) => {
     try {
-      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/coupon/delete-coupons', {
+      const response = await fetch('https://api.merabestie.com/coupon/delete-coupons', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
@@ -126,8 +126,8 @@ const CouponPage = () => {
 
     try {
       const endpoint = isEditing 
-        ? 'https://ecommercebackend-8gx8.onrender.com/coupon/update-status'
-        : 'https://ecommercebackend-8gx8.onrender.com/coupon/save-coupons';
+        ? 'https://api.merabestie.com/coupon/update-status'
+        : 'https://api.merabestie.com/coupon/save-coupons';
       const method = isEditing?'PUT':'POST'
       const response = await fetch(endpoint, {
         method: method,
