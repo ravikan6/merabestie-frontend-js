@@ -18,7 +18,7 @@ import {
   RiLoginBoxLine,
 } from "react-icons/ri";
 import SearchBar from "./SearchBar";
-import { API_URL } from '../../../constants'
+
 
 const ProfessionalNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,7 +44,7 @@ const ProfessionalNavbar = () => {
 
       try {
         const cartResponse = await fetch(
-          `${API_URL}/cart/get-cart`, {
+          `https://ecommercebackend-8gx8.onrender.com/cart/get-cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ const ProfessionalNavbar = () => {
       if (userId) {
         try {
           const response = await fetch(
-            `${API_URL}/auth/user/${userId}`
+            `https://ecommercebackend-8gx8.onrender.com/auth/user/${userId}`
           );
           const data = await response.json();
           setUserName(data.name);
@@ -160,9 +160,9 @@ const ProfessionalNavbar = () => {
   };
 
   const navLinks = [
-    { path: "/", name: "HOME", icon: RiHome2Line },
+    { path: "/HomePage", name: "HOME", icon: RiHome2Line },
     { path: "/shop", name: "SHOP", icon: RiStore2Line },
-    { path: "/contact", name: "CONTACT", icon: RiPhoneLine },
+    { path: "/Contact", name: "CONTACT", icon: RiPhoneLine },
   ]
 
   const categories = [

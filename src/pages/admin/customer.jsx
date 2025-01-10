@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/sidebar';
 import { Search, ArrowUpDown } from 'lucide-react';
 import { Helmet } from "react-helmet";
-import { API_URL } from '../../constants';
 
 const Customers = () => {
   const { sellerId } = useParams();
@@ -23,7 +22,7 @@ const Customers = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/verify-seller`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -32,7 +31,7 @@ const Customers = () => {
         });
 
         const data = await response.json();
-
+        
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -51,7 +50,7 @@ const Customers = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await fetch(`${API_URL}/get-user`);
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/get-user');
       const data = await response.json();
       if (data.success) {
         // Map the user data and set default values if fields are missing
@@ -78,7 +77,7 @@ const Customers = () => {
 
   const handleStatusChange = async (userId, newStatus) => {
     try {
-      const response = await fetch(`${API_URL}/update-account-status`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/update-account-status', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -90,10 +89,10 @@ const Customers = () => {
       });
 
       if (response.ok) {
-        setCustomers(prevCustomers =>
-          prevCustomers.map(customer =>
-            customer.userId === userId
-              ? { ...customer, accountStatus: newStatus }
+        setCustomers(prevCustomers => 
+          prevCustomers.map(customer => 
+            customer.userId === userId 
+              ? {...customer, accountStatus: newStatus}
               : customer
           )
         );
@@ -105,7 +104,7 @@ const Customers = () => {
 
   const sortedCustomers = React.useMemo(() => {
     if (!Array.isArray(customers)) return [];
-
+    
     let sortableCustomers = [...customers];
     if (sortConfig.key !== null) {
       sortableCustomers.sort((a, b) => {
@@ -133,18 +132,18 @@ const Customers = () => {
       const userId = customer.userId?.toString().toLowerCase() || '';
       const customerName = customer.name?.toLowerCase() || '';
       const customerEmail = customer.email?.toLowerCase() || '';
-
-      return userId.includes(searchLower) ||
-        customerName.includes(searchLower) ||
-        customerEmail.includes(searchLower);
+      
+      return userId.includes(searchLower) || 
+             customerName.includes(searchLower) || 
+             customerEmail.includes(searchLower);
     });
   }, [sortedCustomers, searchQuery]);
 
   return (
     <div className="flex">
-      <Helmet>
-        <title>Customers | Admin | Mera Bestie</title>
-      </Helmet>
+    <Helmet>
+      <title>Customers | Admin | Mera Bestie</title>
+    </Helmet>
       <Sidebar />
       <div className="flex-1 p-8 ml-[5rem] lg:ml-64 bg-pink-50 min-h-screen">
         <div className="mb-6 flex justify-center">

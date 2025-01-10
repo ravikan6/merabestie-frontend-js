@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 import Navbar from "../user/navbar/navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { API_URL } from "../../constants";
+
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -123,7 +123,7 @@ const AdminLogin = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/admin/login`, {
+      const response = await fetch(`https://ecommercebackend-8gx8.onrender.com/admin/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

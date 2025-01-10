@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios directly
-import { API_URL } from '../constants';
 
 const AuthContext = createContext();
 
@@ -9,7 +8,7 @@ export const AuthProvider = ({ children }) => {
 
   // Axios instance with default configurations
   const api = axios.create({
-    baseURL: API_URL, // Backend URL
+    baseURL: 'https://ecommercebackend-8gx8.onrender.com', // Backend URL
     withCredentials: true, // Include cookies in requests
   });
 
@@ -23,10 +22,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async (name, email, password) => {
     const response = await api.post('/auth/signup', { name, email, password });
     const { userId } = response.data;
-
+  
     // Store userId in sessionStorage
     sessionStorage.setItem('userId', userId);
-
+  
     setUser({ name, email, userId });
     return userId;
   };
@@ -37,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.message === 'Login successful') {
         const { userId } = response.data;
-
+        
         // Save userId in sessionStorage
         sessionStorage.setItem('userId', userId);
 

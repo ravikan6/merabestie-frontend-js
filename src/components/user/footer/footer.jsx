@@ -1,6 +1,5 @@
 import React from 'react';
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
-import { APP_NAME } from '../../../constants'
 
 const Footer = () => {
   return (
@@ -35,7 +34,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="mt-8 text-center text-gray-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} {APP_NAME}. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} MERA Bestie. All rights reserved.</p>
       </div>
     </footer>
   );

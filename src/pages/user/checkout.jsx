@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, MapPin, ShoppingCart, CreditCard, Tag, Loader2 } from 'lucide-react';
+import { CheckCircle, CreditCard, Tag, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Helmet } from "react-helmet";
 import Navbar from '../../components/user/navbar/navbar';
 import { useLocation } from 'react-router-dom';
-import Footer from '../../components/user/footer/footer';
 import SEOComponent from '../../components/SEO/SEOComponent';
 import { API_URL, APP_DESC, APP_NAME, RAZORPAY_API } from '../../constants'
 
@@ -68,6 +67,11 @@ const Checkout = () => {
       console.error('Error parsing local cart:', error);
     }
     return [];
+  };
+
+  const calculateTotalAmountInPaise = () => {
+    const totalAmount = total + shipping; // Calculate total amount including shipping
+    return Math.round(totalAmount * 100); // Convert to paise for Razorpay
   };
 
   const fetchCartItems = async () => {
@@ -202,7 +206,7 @@ const Checkout = () => {
     if (userId) {
       setIsProcessing(true);
       try {
-        if ((saveAddress && userId)) {
+        if (saveAddress && userId) {
           try {
             await fetch(`${API_URL}/update-address`, {
               method: 'POST',
@@ -215,28 +219,33 @@ const Checkout = () => {
               })
             });
           } catch (err) {
-            throw new Error("An Error ocured while saving Address.")
+            throw new Error("An Error occurred while saving Address.")
           }
         }
         // Step 1: Create Order on Backend
-        const response = await fetch(`${API_URL}/cart/create-order`, {
+        const response = await fetch(`${API_URL}/orders/create-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: (total + shipping) * 100, currency: 'INR', userId: userId }), // Amount in paise
+          body: JSON.stringify({ amount: calculateTotalAmountInPaise(), currency: 'INR', userId }), // Amount in paise
         });
         const order = await response.json();
+
+        if (!order || !order.order.id) {
+          alert('Error creating order. Please try again later.');
+          return;
+        }
 
         // Step 2: Open Razorpay Checkout
         const options = {
           key: RAZORPAY_API, // Replace with your Razorpay Key ID
-          amount: order?.amount,
-          currency: order?.currency,
+          amount: order.order.amount,
+          currency: order.order.currency,
           name: APP_NAME,
           description: APP_DESC,
-          order_id: order.id,
+          order_id: order.order.id,
           handler: async function (response) {
             // Step 3: Verify Payment and Place Order
-            const verificationResponse = await fetch(`${API_URL}/cart/verify-payment`, {
+            const verificationResponse = await fetch(`${API_URL}/orders/verify-payment`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -249,7 +258,7 @@ const Checkout = () => {
             const verificationResult = await verificationResponse.json();
 
             if (verificationResult.success) {
-              await handlePlaceOrder();
+              await handlePlaceOrder(); // Place the order if payment is successful
             } else {
               alert('Payment verification failed.');
             }
@@ -287,7 +296,7 @@ const Checkout = () => {
     try {
       if (userId) {
         // Place order through backend if logged in
-        const response = await fetch(`${API_URL}/cart/place-order`, {
+        const response = await fetch(`http://localhost:5000/orders/place-order`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -297,7 +306,7 @@ const Checkout = () => {
             date,
             time,
             address: Object.values(address).join(', '),
-            price: total,
+            price: total+shipping,
             productsOrdered,
             status: "Processing",
             paymentStatus: "Paid",
@@ -484,7 +493,7 @@ const Checkout = () => {
 
               <div className="flex justify-between text-xl font-bold border-t pt-4">
                 <span>Total</span>
-                <span className="font-thin tracking-widest">Rs. {total.toFixed(2)}</span>
+                <span className="font-thin tracking-widest">Rs. {total+shipping} </span>
               </div>
 
               <button

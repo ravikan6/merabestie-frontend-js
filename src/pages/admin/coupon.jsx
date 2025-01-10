@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
 import Sidebar from '../../components/admin/sidebar';
 import { useParams, useNavigate } from 'react-router-dom';
-import { API_URL } from '../../constants';
 
 const CouponPage = () => {
   const { sellerId } = useParams();
@@ -30,7 +29,7 @@ const CouponPage = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/verify-seller`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -39,7 +38,7 @@ const CouponPage = () => {
         });
 
         const data = await response.json();
-
+        
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -58,7 +57,7 @@ const CouponPage = () => {
 
   const fetchCoupons = async () => {
     try {
-      const response = await fetch(`${API_URL}/coupon/get-coupons`);
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/coupon/get-coupons');
       const data = await response.json();
       if (data.success) {
         setCoupons(data.coupons);
@@ -100,7 +99,7 @@ const CouponPage = () => {
 
   const handleDeleteCoupon = async (code) => {
     try {
-      const response = await fetch(`${API_URL}/coupon/delete-coupons`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/coupon/delete-coupons', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'
@@ -126,10 +125,10 @@ const CouponPage = () => {
     }
 
     try {
-      const endpoint = isEditing
-        ? `${API_URL}/coupon/update-status`
-        : `${API_URL}/coupon/save-coupons`;
-      const method = isEditing ? 'PUT' : 'POST'
+      const endpoint = isEditing 
+        ? 'https://ecommercebackend-8gx8.onrender.com/coupon/update-status'
+        : 'https://ecommercebackend-8gx8.onrender.com/coupon/save-coupons';
+      const method = isEditing?'PUT':'POST'
       const response = await fetch(endpoint, {
         method: method,
         headers: {
@@ -196,7 +195,7 @@ const CouponPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow relative"
                   >
-                    <button
+                    <button 
                       onClick={() => handleDeleteCoupon(coupon.code)}
                       className="absolute top-2 right-2 p-2 text-gray-400 hover:text-red-500 transition-colors"
                     >
@@ -224,7 +223,7 @@ const CouponPage = () => {
 
             {showDialog && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <motion.div
+                <motion.div 
                   className="bg-white p-6 rounded-lg w-full max-w-md"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}

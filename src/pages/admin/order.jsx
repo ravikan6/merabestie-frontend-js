@@ -3,7 +3,6 @@ import { Search, ArrowUpDown, Eye, PackageOpen, Truck, CheckCircle } from 'lucid
 import { Helmet } from "react-helmet";
 import Sidebar from '../../components/admin/sidebar';
 import { useParams, useNavigate } from 'react-router-dom';
-import { API_URL } from '../../constants';
 
 const OrderStatusBadge = ({ status }) => {
   const statusColors = {
@@ -29,14 +28,14 @@ const OrderDetailsModal = ({ order, onClose }) => {
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-pink-600">Order Details</h2>
-          <button
-            onClick={onClose}
+          <button 
+            onClick={onClose} 
             className="text-gray-500 hover:text-gray-700 focus:outline-none"
           >
             ✕
           </button>
         </div>
-
+        
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -48,13 +47,13 @@ const OrderDetailsModal = ({ order, onClose }) => {
               <p className="font-semibold">{order.trackingId}</p>
             </div>
           </div>
-
+          
           <div>
             <p className="text-sm text-gray-600">Customer</p>
             <p className="font-semibold">{order.name}</p>
             <p className="text-sm text-gray-500">{order.email}</p>
           </div>
-
+          
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-600">Date</p>
@@ -65,12 +64,12 @@ const OrderDetailsModal = ({ order, onClose }) => {
               <p>{order.time}</p>
             </div>
           </div>
-
+          
           <div>
             <p className="text-sm text-gray-600">Shipping Address</p>
             <p>{order.address}</p>
           </div>
-
+          
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-600">Total Price</p>
             <p className="text-xl font-bold text-pink-600">${order.price}</p>
@@ -100,7 +99,7 @@ const Orders = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/verify-seller`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -109,7 +108,7 @@ const Orders = () => {
         });
 
         const data = await response.json();
-
+        
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -128,7 +127,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`${API_URL}/get-orders`);
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/get-orders');
       const data = await response.json();
       const ordersWithStatus = data.orders.map(order => ({
         ...order,
@@ -136,7 +135,7 @@ const Orders = () => {
           Math.floor(Math.random() * 5)
         ]
       }));
-
+      
       setOrders(ordersWithStatus);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -153,7 +152,7 @@ const Orders = () => {
 
   const sortedOrders = React.useMemo(() => {
     if (!Array.isArray(orders)) return [];
-
+    
     let sortableOrders = [...orders];
     if (sortConfig.key !== null) {
       sortableOrders.sort((a, b) => {
@@ -161,7 +160,7 @@ const Orders = () => {
         const bValue = b[sortConfig.key];
 
         if (!isNaN(aValue) && !isNaN(bValue)) {
-          return sortConfig.direction === 'ascending'
+          return sortConfig.direction === 'ascending' 
             ? Number(aValue) - Number(bValue)
             : Number(bValue) - Number(aValue);
         }
@@ -186,7 +185,7 @@ const Orders = () => {
       const searchLower = searchQuery.toLowerCase();
       const orderId = order.orderId?.toString().toLowerCase() || '';
       const customerName = order.name?.toLowerCase() || '';
-
+      
       return orderId.includes(searchLower) || customerName.includes(searchLower);
     });
   }, [sortedOrders, searchQuery]);
@@ -219,9 +218,9 @@ const Orders = () => {
             <thead className="bg-pink-100">
               <tr>
                 {['orderId', 'date', 'time', 'name', 'email', 'price', 'status'].map((key) => (
-                  <th
+                  <th 
                     key={key}
-                    onClick={() => handleSort(key)}
+                    onClick={() => handleSort(key)} 
                     className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-pink-200 transition"
                   >
                     <div className="flex items-center">
@@ -260,7 +259,7 @@ const Orders = () => {
                     <OrderStatusBadge status={order.status} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button
+                    <button 
                       onClick={() => setSelectedOrder(order)}
                       className="text-pink-600 hover:text-pink-800 transition flex items-center"
                     >
@@ -273,11 +272,11 @@ const Orders = () => {
           </table>
         </div>
       </div>
-
+      
       {selectedOrder && (
-        <OrderDetailsModal
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
+        <OrderDetailsModal 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)} 
         />
       )}
     </div>

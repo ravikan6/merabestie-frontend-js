@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../user/navbar/navbar";
-import { API_URL } from "../../constants";
 
 const AdminSignup = () => {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/admin/seller/signup`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -74,12 +73,12 @@ const AdminSignup = () => {
   const handleVerificationMethodSelect = async (method) => {
     setVerificationMethod(method);
     try {
-      const response = await fetch(`${API_URL}/admin/seller/send-otp`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           emailId
         })
       });
@@ -98,9 +97,9 @@ const AdminSignup = () => {
 
   const handleResendOtp = async () => {
     if (resendDisabled) return;
-
+    
     try {
-      const response = await fetch(`${API_URL}/seller/send-otp`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -125,6 +124,7 @@ const AdminSignup = () => {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
+      
       if (value && index < 5) {
         const nextInput = document.getElementById(`otp-${index + 1}`);
         if (nextInput) nextInput.focus();
@@ -140,7 +140,7 @@ const AdminSignup = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/seller/verify-otp`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/seller/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

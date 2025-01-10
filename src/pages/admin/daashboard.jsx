@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Dashboard from '../../components/admin/dashboard';
 import Sidebar from '../../components/admin/sidebar';
-import { API_URL } from '../../constants';
 
 const DashboardPage = () => {
     const { sellerId } = useParams();
@@ -32,7 +31,7 @@ const DashboardPage = () => {
             }
 
             try {
-                const response = await fetch(`${API_URL}/admin/verify-seller`, {
+                const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -41,7 +40,7 @@ const DashboardPage = () => {
                 });
 
                 const data = await response.json();
-
+                
                 if (data.loggedIn !== 'loggedin') {
                     navigate('/seller/login');
                 }

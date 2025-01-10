@@ -14,7 +14,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet";
 import Navbar from "../../components/user/navbar/navbar";
 import SEOComponent from "../../components/SEO/SEOComponent";
-import { API_URL } from '../../constants';
 
 const Shop = ({ category }) => {
   // State declarations
@@ -60,7 +59,7 @@ const Shop = ({ category }) => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(
-          `${API_URL}/get-product`
+          "https://ecommercebackend-8gx8.onrender.com/get-product"
         );
         const data = await response.json();
         if (data.success) {
@@ -144,8 +143,9 @@ const Shop = ({ category }) => {
   const ProductCard = ({ product }) => {
     return (
       <motion.div
-        className={`bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg relative group ${layout === "list" ? "flex flex-col sm:flex-row" : ""
-          }`}
+        className={`bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-300 hover:shadow-lg relative group ${
+          layout === "list" ? "flex flex-col sm:flex-row" : ""
+        }`}
         whileHover={{ y: -5 }}
         onMouseEnter={() => setHoveredProduct(product.productId)}
         onMouseLeave={() => setHoveredProduct(null)}
@@ -155,8 +155,8 @@ const Shop = ({ category }) => {
           className={`block ${layout === "list" ? "sm:w-1/3" : "w-full"}`}
         >
           <div className="relative">
-            <img
-              src={product.img[0] ? product.img[0] : product.img}
+            <img 
+              src={product.img[0]?product.img[0]:product.img} 
               alt={product.name}
               className="w-full h-64 object-cover object-center transform transition-transform duration-300 group-hover:scale-105"
             />
@@ -210,7 +210,7 @@ const Shop = ({ category }) => {
 
   return (
     <>
-      <SEOComponent />
+      <SEOComponent/>
 
       <div className="bg-gradient-to-r from-indigo-500 via-pink-500 to-pink-500 text-white">
         <div className="max-w-7xl mx-auto px-4 py-3">
@@ -239,15 +239,17 @@ const Shop = ({ category }) => {
                   {isMobileMenuOpen ? "Close Categories" : "Show Categories"}
                 </button>
                 <div
-                  className={`flex flex-wrap items-center gap-3 ${isMobileMenuOpen ? "block" : "hidden"
-                    } sm:flex`}
+                  className={`flex flex-wrap items-center gap-3 ${
+                    isMobileMenuOpen ? "block" : "hidden"
+                  } sm:flex`}
                 >
                   <button
                     onClick={() => filterProducts("all")}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === "all"
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === "all"
                         ? "bg-black text-white"
                         : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
+                    }`}
                   >
                     All
                   </button>
@@ -255,10 +257,11 @@ const Shop = ({ category }) => {
                     <button
                       key={cat.name}
                       onClick={() => filterProducts(cat.name)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat.name
+                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                        selectedCategory === cat.name
                           ? "bg-black text-white"
                           : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                      }`}
                     >
                       {cat.name}
                     </button>
@@ -280,19 +283,21 @@ const Shop = ({ category }) => {
                 <div className="flex gap-2 bg-white border border-gray-300 rounded-full p-1">
                   <button
                     onClick={() => setLayout("grid")}
-                    className={`p-2 rounded-full transition-colors ${layout === "grid"
+                    className={`p-2 rounded-full transition-colors ${
+                      layout === "grid"
                         ? "bg-black text-white"
                         : "text-gray-500 hover:bg-gray-100"
-                      }`}
+                    }`}
                   >
                     <FaThLarge size={16} />
                   </button>
                   <button
                     onClick={() => setLayout("list")}
-                    className={`p-2 rounded-full transition-colors ${layout === "list"
+                    className={`p-2 rounded-full transition-colors ${
+                      layout === "list"
                         ? "bg-black text-white"
                         : "text-gray-500 hover:bg-gray-100"
-                      }`}
+                    }`}
                   >
                     <FaList size={16} />
                   </button>
@@ -302,10 +307,11 @@ const Shop = ({ category }) => {
           </div>
 
           <div
-            className={`grid gap-6 ${layout === "grid"
+            className={`grid gap-6 ${
+              layout === "grid"
                 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 : "grid-cols-1"
-              }`}
+            }`}
           >
             {loading ? (
               <div className="col-span-full text-center">

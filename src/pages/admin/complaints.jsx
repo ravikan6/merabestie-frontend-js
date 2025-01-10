@@ -3,7 +3,6 @@ import Sidebar from '../../components/admin/sidebar';
 import { Search, ArrowUpDown, ChevronDown } from 'lucide-react';
 import { Helmet } from "react-helmet";
 import { useParams, useNavigate } from 'react-router-dom';
-import { API_URL } from '../../constants';
 
 const Complaints = () => {
   const { sellerId } = useParams();
@@ -24,7 +23,7 @@ const Complaints = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/verify-seller`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -33,7 +32,7 @@ const Complaints = () => {
         });
 
         const data = await response.json();
-
+        
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -66,7 +65,7 @@ const Complaints = () => {
 
   const fetchComplaints = async () => {
     try {
-      const response = await fetch(`${API_URL}/complaints/get-complaints`);
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/complaints/get-complaints');
       const data = await response.json();
       setComplaints(data.complaints);
     } catch (error) {
@@ -76,7 +75,7 @@ const Complaints = () => {
 
   const handleStatusChange = async (complaintId, newStatus) => {
     try {
-      const response = await fetch(`${API_URL}/update-complaint-status`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/update-complaint-status', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -106,7 +105,7 @@ const Complaints = () => {
 
   const sortedComplaints = React.useMemo(() => {
     if (!Array.isArray(complaints)) return [];
-
+    
     let sortableComplaints = [...complaints];
     if (sortConfig.key !== null) {
       sortableComplaints.sort((a, b) => {
@@ -122,7 +121,7 @@ const Complaints = () => {
     return sortableComplaints;
   }, [complaints, sortConfig]);
 
-  const filteredComplaints = sortedComplaints.filter(complaint =>
+  const filteredComplaints = sortedComplaints.filter(complaint => 
     complaint.complaintNumber?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -166,8 +165,8 @@ const Complaints = () => {
                       { key: 'createdAt', label: 'Created At' },
                       { key: null, label: 'Actions' }
                     ].map(({ key, label }) => (
-                      <th
-                        key={label}
+                      <th 
+                        key={label} 
                         onClick={() => key && handleSort(key)}
                         className={`px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${key ? 'cursor-pointer hover:bg-pink-200 transition-colors' : ''}`}
                       >
@@ -181,8 +180,8 @@ const Complaints = () => {
                 </thead>
                 <tbody>
                   {filteredComplaints.map((complaint) => (
-                    <tr
-                      key={complaint.complaintNumber}
+                    <tr 
+                      key={complaint.complaintNumber} 
                       className="hover:bg-pink-50 transition-colors duration-200"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -202,8 +201,8 @@ const Complaints = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${complaint.status === 'Resolved'
-                            ? 'bg-green-100 text-green-800'
+                          ${complaint.status === 'Resolved' 
+                            ? 'bg-green-100 text-green-800' 
                             : 'bg-yellow-100 text-yellow-800'}`}>
                           {complaint.status || 'Pending'}
                         </span>
@@ -213,27 +212,27 @@ const Complaints = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm relative dropdown-container">
                         <div className="relative">
-                          <button
+                          <button 
                             onClick={() => setActiveDropdown(
-                              activeDropdown === complaint.complaintNumber
-                                ? null
+                              activeDropdown === complaint.complaintNumber 
+                                ? null 
                                 : complaint.complaintNumber
                             )}
                             className="flex items-center px-3 py-2 bg-pink-100 text-pink-700 rounded-lg hover:bg-pink-200 transition-colors"
                           >
                             Update Status <ChevronDown size={16} className="ml-2" />
                           </button>
-
+                          
                           {activeDropdown === complaint.complaintNumber && (
                             <div className="absolute right-0 mt-2 w-40 bg-white border border-pink-200 rounded-lg shadow-lg z-10">
                               <ul className="py-1">
-                                <li
+                                <li 
                                   onClick={() => handleStatusChange(complaint.complaintNumber, 'Pending')}
                                   className="px-4 py-2 hover:bg-pink-50 cursor-pointer text-sm text-gray-700 hover:text-pink-600"
                                 >
                                   Pending
                                 </li>
-                                <li
+                                <li 
                                   onClick={() => handleStatusChange(complaint.complaintNumber, 'Resolved')}
                                   className="px-4 py-2 hover:bg-pink-50 cursor-pointer text-sm text-gray-700 hover:text-pink-600"
                                 >

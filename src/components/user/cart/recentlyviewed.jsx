@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { API_URL } from '../../../constants'
 
 const RecentlyViewed = () => {
   const [products, setProducts] = useState([]);
@@ -17,7 +16,7 @@ const RecentlyViewed = () => {
       }
 
       const productPromises = recentlyViewedProducts.map(async (element) => {
-        const response = await fetch(`${API_URL}/product/` + element);
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/product/' + element);
         const productDetail = await response.json();
         return productDetail.product;
       });

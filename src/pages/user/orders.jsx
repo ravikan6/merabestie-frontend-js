@@ -4,7 +4,6 @@ import { Helmet } from "react-helmet";
 import { motion } from 'framer-motion';
 import Navbar from '../../components/user/navbar/navbar';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { API_URL } from '../../constants'
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -20,7 +19,7 @@ const Order = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/find-my-order`, {
+        const response = await fetch(`https://ecommercebackend-8gx8.onrender.com/find-my-order`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -44,14 +43,14 @@ const Order = () => {
 
   const fetchProductDetails = async (productId) => {
     try {
-      const response = await fetch(`${API_URL}/:productId`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/:productId', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ productId }),
       });
-
+  
       const data = await response.json();
       if (data.success) {
         return data.product;
@@ -61,18 +60,18 @@ const Order = () => {
     }
     return null;
   };
-
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100">
         <Navbar />
         <div className="flex flex-col justify-center items-center h-[calc(100vh-64px)]">
-          <motion.div
+          <motion.div 
             className="w-16 h-16 border-4 border-pink-600 border-t-transparent rounded-full"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
-          <motion.p
+          <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -91,9 +90,9 @@ const Order = () => {
         <title>My Orders | Mera Bestie</title>
       </Helmet>
       <Navbar />
-
+      
       <div className="container mx-auto px-4 py-8">
-        <motion.div
+        <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -106,15 +105,15 @@ const Order = () => {
 
         <div className="space-y-8">
           {orders.length === 0 ? (
-            <motion.div
+            <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
               className="bg-white p-8 rounded-lg shadow-md text-center"
             >
               <p className="text-gray-600 text-xl">No orders found</p>
-              <button
-                onClick={() => navigate('/shop')}
+              <button 
+                onClick={() => navigate('/shop')} 
                 className="mt-4 px-6 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors duration-300"
               >
                 Start Shopping
@@ -170,16 +169,7 @@ const OrderCard = ({ order, fetchProductDetails }) => {
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <div className='flex gap-6'>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-500">Status</h3>
-              <p className="text-gray-800 font-medium">{order?.status}</p>
-            </div>
-            <div className="md:col-span-2">
-              <h3 className="text-sm font-semibold text-gray-500">Payment</h3>
-              <p className="text-gray-800 font-medium">{order.paymentStatus}</p>
-            </div>
-          </div>
+          <h3 className="text-lg font-semibold text-gray-700">Products Ordered</h3>
           {expanded ? (
             <ChevronUp className="w-5 h-5 text-gray-500" />
           ) : (
@@ -187,7 +177,7 @@ const OrderCard = ({ order, fetchProductDetails }) => {
           )}
         </div>
       </div>
-
+      
       {expanded && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -205,7 +195,7 @@ const OrderCard = ({ order, fetchProductDetails }) => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 className="bg-gradient-to-br from-pink-100 to-purple-100 p-4 rounded-lg flex items-center space-x-4 shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <img src={product.img[0] ? product.img[0] : product.img} alt={product.name} className="w-20 h-20 object-cover rounded-md" />
+                <img src={product.img[0]?product.img[0]:product.img} alt={product.name} className="w-20 h-20 object-cover rounded-md" />
                 <div>
                   <p className="text-gray-800 font-semibold">{product.name}</p>
                   <p className="text-pink-600 font-medium">{product.price}</p>

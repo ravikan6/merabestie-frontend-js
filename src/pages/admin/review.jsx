@@ -3,7 +3,6 @@ import Sidebar from '../../components/admin/sidebar';
 import { ArrowUpDown } from 'lucide-react';
 import { Helmet } from "react-helmet";
 import { useParams, useNavigate } from 'react-router-dom';
-import { API_URL } from '../../constants';
 
 const Reviews = () => {
   const { sellerId } = useParams();
@@ -24,7 +23,7 @@ const Reviews = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/verify-seller`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -33,7 +32,7 @@ const Reviews = () => {
         });
 
         const data = await response.json();
-
+        
         if (data.loggedIn === 'loggedin') {
           fetchReviews();
         } else {
@@ -50,7 +49,7 @@ const Reviews = () => {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`${API_URL}/reviews/get-reviews`);
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/reviews/get-reviews');
       const data = await response.json();
       if (data.success) {
         setReviews(data.reviews);
@@ -86,7 +85,7 @@ const Reviews = () => {
     return sortableReviews;
   }, [reviews, sortConfig]);
 
-  const filteredReviews = sortedReviews.filter(review =>
+  const filteredReviews = sortedReviews.filter(review => 
     review.productId?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
     review.review?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -101,7 +100,7 @@ const Reviews = () => {
         <div className="mb-6 flex justify-between items-center">
           <div className="relative">
             <div className={`flex items-center ${isSearchExpanded ? 'w-full md:w-64' : 'w-10 md:w-64'} transition-all duration-300`}>
-              <button
+              <button 
                 className="md:hidden absolute left-2 z-10"
                 onClick={() => setIsSearchExpanded(!isSearchExpanded)}
               >
@@ -112,8 +111,9 @@ const Reviews = () => {
               <input
                 type="text"
                 placeholder="Search by product ID or review..."
-                className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 ${isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
-                  } transition-all duration-300`}
+                className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 ${
+                  isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
+                } transition-all duration-300`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />

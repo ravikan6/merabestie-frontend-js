@@ -3,7 +3,6 @@ import { faTrash, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import emptyCart from '../../Images/empty_cart.webp';
 import { Link } from 'react-router-dom';
-import { API_URL } from '../../../constants'
 
 const CartItems = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -27,7 +26,7 @@ const CartItems = () => {
 
       try {
         // First fetch cart data
-        const cartResponse = await fetch(`${API_URL}/cart/get-cart`, {
+        const cartResponse = await fetch(`https://ecommercebackend-8gx8.onrender.com/cart/get-cart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -53,7 +52,7 @@ const CartItems = () => {
 
         // Get product details for each unique product
         const productPromises = uniqueProductIds.map(async (productId) => {
-          const productResponse = await fetch(`${API_URL}/:productId`, {
+          const productResponse = await fetch('https://ecommercebackend-8gx8.onrender.com/:productId', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -101,7 +100,7 @@ const CartItems = () => {
   
       try {
         const userId = sessionStorage.getItem('userId');
-        const response = await fetch(`${API_URL}/cart/update-quantit`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/cart/update-quantity', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -134,7 +133,7 @@ const CartItems = () => {
   
     try {
       const userId = sessionStorage.getItem('userId');
-      const response = await fetch(`${API_URL}/cart/delete-items`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/cart/delete-items', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -167,7 +166,7 @@ const CartItems = () => {
 
   const handleVoucherRedeem = async () => {
     try {
-      const response = await fetch(`${API_URL}/coupon/verify-coupon`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/coupon/verify-coupon', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

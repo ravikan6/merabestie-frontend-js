@@ -3,7 +3,6 @@ import { Pencil, Save, Search, ArrowUpDown, Trash, X, ChevronLeft, ChevronRight,
 import { Helmet } from "react-helmet";
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/admin/sidebar';
-import { API_URL } from '../../constants';
 
 const Product = () => {
   const { sellerId } = useParams();
@@ -40,7 +39,7 @@ const Product = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/verify-seller`, {
+        const response = await fetch('https://ecommercebackend-8gx8.onrender.com/admin/verify-seller', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -49,7 +48,7 @@ const Product = () => {
         });
 
         const data = await response.json();
-
+        
         if (data.loggedIn !== 'loggedin') {
           navigate('/seller/login');
         }
@@ -68,7 +67,7 @@ const Product = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}/get-product`);
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/get-product');
       const data = await response.json();
       setProducts(data.products);
     } catch (error) {
@@ -96,12 +95,12 @@ const Product = () => {
       setIsUploading(true);
       setUploadStatus('Uploading...');
 
-      const response = await fetch(`${API_URL}/image/image-upload`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/image/image-upload', {
         method: 'POST',
         body: formData,
       });
       const data = await response.json();
-
+      
       if (data.success) {
         setEditValues(prev => ({
           ...prev,
@@ -123,7 +122,7 @@ const Product = () => {
 
   const handleDelete = async (product) => {
     try {
-      await fetch(`${API_URL}/delete-product`, {
+      await fetch('https://ecommercebackend-8gx8.onrender.com/delete-product', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -171,7 +170,7 @@ const Product = () => {
 
   const handleSave = async (productId) => {
     try {
-      const response = await fetch(`${API_URL}/instock-update`, {
+      const response = await fetch('https://ecommercebackend-8gx8.onrender.com/instock-update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -202,11 +201,11 @@ const Product = () => {
 
   const handleImageNavigation = (direction) => {
     if (direction === 'prev') {
-      setCurrentImageIndex((prev) =>
+      setCurrentImageIndex((prev) => 
         prev === 0 ? editValues.img.length - 1 : prev - 1
       );
     } else {
-      setCurrentImageIndex((prev) =>
+      setCurrentImageIndex((prev) => 
         prev === editValues.img.length - 1 ? 0 : prev + 1
       );
     }
@@ -214,7 +213,7 @@ const Product = () => {
 
   const sortedProducts = React.useMemo(() => {
     if (!Array.isArray(products)) return [];
-
+    
     let sortableProducts = [...products];
     if (sortConfig.key !== null) {
       sortableProducts.sort((a, b) => {
@@ -230,7 +229,7 @@ const Product = () => {
     return sortableProducts;
   }, [products, sortConfig]);
 
-  const filteredProducts = sortedProducts.filter(product =>
+  const filteredProducts = sortedProducts.filter(product => 
     product.productId?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -246,7 +245,7 @@ const Product = () => {
         <div className="mb-6 flex justify-between items-center">
           <div className="relative">
             <div className={`flex items-center ${isSearchExpanded ? 'w-full md:w-64' : 'w-10 md:w-64'} transition-all duration-300`}>
-              <button
+              <button 
                 className="md:hidden absolute left-2 z-10"
                 onClick={() => setIsSearchExpanded(!isSearchExpanded)}
               >
@@ -255,8 +254,9 @@ const Product = () => {
               <input
                 type="text"
                 placeholder="Search by product ID or name..."
-                className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 ${isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
-                  } transition-all duration-300`}
+                className={`pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 ${
+                  isSearchExpanded ? 'w-full opacity-100' : 'w-0 md:w-full opacity-0 md:opacity-100'
+                } transition-all duration-300`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -386,17 +386,17 @@ const Product = () => {
                         type="text"
                         className="mt-1 block w-full border rounded-md shadow-sm p-2"
                         value={editValues.name}
-                        onChange={(e) => setEditValues({ ...editValues, name: e.target.value })}
+                        onChange={(e) => setEditValues({...editValues, name: e.target.value})}
                         disabled={!editingId}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Category</label>
+                    <label className="block text-sm font-medium text-gray-700">Category</label>
                       <input
                         type="text"
                         className="mt-1 block w-full border rounded-md shadow-sm p-2"
                         value={editValues.category}
-                        onChange={(e) => setEditValues({ ...editValues, category: e.target.value })}
+                        onChange={(e) => setEditValues({...editValues, category: e.target.value})}
                         disabled={!editingId}
                       />
                     </div>
@@ -406,7 +406,7 @@ const Product = () => {
                         type="number"
                         className="mt-1 block w-full border rounded-md shadow-sm p-2"
                         value={editValues.price}
-                        onChange={(e) => setEditValues({ ...editValues, price: e.target.value })}
+                        onChange={(e) => setEditValues({...editValues, price: e.target.value})}
                         disabled={!editingId}
                       />
                     </div>
@@ -418,17 +418,17 @@ const Product = () => {
                         type="number"
                         className="mt-1 block w-full border rounded-md shadow-sm p-2"
                         value={editValues.inStockValue}
-                        onChange={(e) => setEditValues({ ...editValues, inStockValue: e.target.value })}
+                        onChange={(e) => setEditValues({...editValues, inStockValue: e.target.value})}
                         disabled={!editingId}
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Sold</label>
                       <input
-                        type="number"
+                        type="number" 
                         className="mt-1 block w-full border rounded-md shadow-sm p-2"
                         value={editValues.soldStockValue}
-                        onChange={(e) => setEditValues({ ...editValues, soldStockValue: e.target.value })}
+                        onChange={(e) => setEditValues({...editValues, soldStockValue: e.target.value})}
                         disabled={!editingId}
                       />
                     </div>
@@ -438,7 +438,7 @@ const Product = () => {
                         className="mt-1 block w-full border rounded-md shadow-sm p-2"
                         rows="3"
                         value={editValues.description}
-                        onChange={(e) => setEditValues({ ...editValues, description: e.target.value })}
+                        onChange={(e) => setEditValues({...editValues, description: e.target.value})}
                         disabled={!editingId}
                       />
                     </div>
@@ -511,10 +511,11 @@ const Product = () => {
                         <button
                           onClick={handleImageUpload}
                           disabled={!selectedFile || isUploading}
-                          className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${!selectedFile || isUploading
+                          className={`px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all ${
+                            !selectedFile || isUploading
                               ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                               : 'bg-pink-500 hover:bg-pink-600 text-white shadow-sm'
-                            }`}
+                          }`}
                         >
                           {isUploading ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
@@ -528,10 +529,11 @@ const Product = () => {
                       </div>
 
                       {uploadStatus && (
-                        <p className={`text-sm font-medium ${uploadStatus.includes('failed') || uploadStatus.includes('Error')
+                        <p className={`text-sm font-medium ${
+                          uploadStatus.includes('failed') || uploadStatus.includes('Error')
                             ? 'text-red-600'
                             : 'text-green-600'
-                          }`}>
+                        }`}>
                           {uploadStatus}
                         </p>
                       )}
