@@ -296,7 +296,7 @@ const Checkout = () => {
     try {
       if (userId) {
         // Place order through backend if logged in
-        const response = await fetch(`http://localhost:5000/orders/place-order`, {
+        const response = await fetch(`https://api.merabestie.com/orders/place-order`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
