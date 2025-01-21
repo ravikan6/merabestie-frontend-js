@@ -262,7 +262,7 @@ function transformData(mydata) {
     // try {
     //   // Send transformed data to the /shiprocketapi endpoint
 
-    //   const response = await fetch('http://localhost:5000/shiprocketapi', { 
+    //   const response = await fetch('https://api.merabestie.com/shiprocketapi', { 
     //     method: 'POST',
     //     headers: {
     //       "Content-Type": 'application/json',
@@ -313,7 +313,7 @@ function transformData(mydata) {
     try {
       const transformedData = transformData(mydata);
   
-      const response = await fetch('http://localhost:5000/shiprocketapi', { 
+      const response = await fetch('https://api.merabestie.com/shiprocketapi', { 
           method: 'POST',
           headers: {
               "Content-Type": 'application/json',
