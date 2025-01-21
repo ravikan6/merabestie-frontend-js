@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import emptyCart from '../../Images/empty_cart.webp';
 import { Link } from 'react-router-dom';
 
+
 const CartItems = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,13 +17,14 @@ const CartItems = () => {
   });
 
   useEffect(() => {
+    console.log(cartItems); 
     const fetchCartItems = async () => {
       const userId = sessionStorage.getItem('userId');
-      if (!userId) {
-        setError('Please login to view cart');
-        setLoading(false);
-        return;
-      }
+      // if (!userId) {
+      //   setError('Please login to view cart');
+      //   setLoading(false);
+      //   return;
+      // }
 
       try {
         // First fetch cart data
@@ -224,6 +226,112 @@ const CartItems = () => {
     );
   }
 
+  // Transform function for mydata
+function transformData(mydata) {
+  return {
+      cart_data: {
+          items: mydata.map(item => ({
+              variant_id: item.variant_id,
+              quantity: item.quantity
+          }))
+      },
+      redirect_url: "https://your-domain.requestcatcher.com/?=anyparam=anyvalue&more=2",
+      timestamp: new Date().toISOString()
+  };
+}
+
+  // ------------------------------------------------------------------------
+  const handleCheckout = async (event) => {
+    const userId = sessionStorage.getItem('userId');
+    // if (!userId) {
+    //   alert('Please log in to proceed.');
+    //   return;
+    // }
+  
+    // Transform cart data
+    const mydata = 
+     cartItems.map(item => ({
+        variant_id: item.productId,
+        quantity: item.quantity || 1
+      }));
+        
+    
+
+    console.log("my data  : ", mydata); 
+  
+    // try {
+    //   // Send transformed data to the /shiprocketapi endpoint
+
+    //   const response = await fetch('http://localhost:5000/shiprocketapi', { 
+    //     method: 'POST',
+    //     headers: {
+    //       "Content-Type": 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       // userId: userId, // Use the actual userId from sessionStorage
+    //       // cart_data: transformedCartData.cart_data.items, // Send the transformed cart data
+    //       // transformedCartData
+
+    //       cart_data: mydata ,
+    //       // redirect_url: transformedCartData.redirect_url,
+    //       // timestamp: transformedCartData.timestamp,
+    //     })
+    //   });
+  
+    //   const data = await response.json();
+    //   console.log(data); 
+
+    //   // var response1 = await fetch('https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details', { 
+    //   //   method: 'POST',
+    //   //   headers: {
+    //   //     'token': data.token,
+    //   //     'X-Api-Key': 'H3E8hebrr7oZFnVV',
+    //   //     'X-Api-HMAC-SHA256': 'FYttb1JEV3KL0iaqcA30FkNE1665aPThcHX37J4sWvo=',
+    //   //     'Content-Type': 'application/json',
+    //   //   },
+    //   //   body: JSON.stringify({
+    //   //     order_id: "65a000df3fc6c468b9da1f53",
+    //   //     timestamp: transformedCartData.timestamp,
+    //   //   })
+    //   // });
+  
+    //   // const data1 = await response1.json();
+    //   // alert("hello...");
+    //   if (data.ok) {
+    //     // console.log("Generated token : ", data.token); 
+    //     // alert(data.token);
+    //     window.HeadlessCheckout.addToCart(event, data.token, {fallbackUrl: "https://your.fallback.com?product=123"});
+    //     // Redirect or update UI as needed
+    //   } else {
+    //     alert(`Failed to place order: ${data.message}`);
+    //   }
+    // } catch (error) {
+    //   console.error('Error during checkout:', error);
+    //   alert('An error occurred during checkout. Please try again.');
+    // }
+
+    try {
+      const transformedData = transformData(mydata);
+  
+      const response = await fetch('http://localhost:5000/shiprocketapi', { 
+          method: 'POST',
+          headers: {
+              "Content-Type": 'application/json',
+          },
+          body: JSON.stringify(transformedData)
+      });
+  
+      const myresponse = await response.json() ;
+      console.log("this was received : ", myresponse.token); 
+      window.HeadlessCheckout.addToCart( event , myresponse.token, {fallbackUrl: "https://your.fallback.com?product=123"});
+  } catch (error) {
+      console.error('Error sending request:', error);
+  }
+  
+  };
+  
+  //------------------------------------------------------------------------------------------------ 
+
   return (
     <div className="space-y-6">
       <div className="bg-white shadow-md rounded-lg">
@@ -341,18 +449,20 @@ const CartItems = () => {
             </div>
           </div>
           
-          <Link 
+          {/* <Link 
             to={'/checkout'}
             state={{
               total: calculateTotal(),
               discount: discountInfo.percentage
             }}
             className="block"
-          >
-            <button className="w-full bg-pink-500 text-white py-2 rounded-md hover:bg-pink-600">
+          > */}
+            <button 
+            onClick={handleCheckout}
+            className="w-full bg-pink-500 text-white py-2 rounded-md hover:bg-pink-600">
               Proceed to Checkout
             </button>
-          </Link>
+          {/* </Link> */}
         </div>
       </div>
     </div>

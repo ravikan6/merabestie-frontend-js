@@ -153,10 +153,7 @@ const ProductDetail = () => {
   const handleAddToCart = async () => {
     const userId = sessionStorage.getItem('userId');
     
-    if (!userId) {
-      navigate('/login');
-      return;
-    }
+
   
     if (stockStatus?.stock === 0) {
       toast.error('Sorry, this product is currently out of stock');
