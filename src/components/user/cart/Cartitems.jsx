@@ -321,9 +321,9 @@ function transformData(mydata) {
           body: JSON.stringify(transformedData)
       });
   
-      const result = await response.json();
-      console.log('Response from backend:', result);
-      
+      const myresponse = await response.json() ;
+      console.log("this was received : ", myresponse.token); 
+      window.HeadlessCheckout.addToCart( event , myresponse.token, {fallbackUrl: "https://your.fallback.com?product=123"});
   } catch (error) {
       console.error('Error sending request:', error);
   }
