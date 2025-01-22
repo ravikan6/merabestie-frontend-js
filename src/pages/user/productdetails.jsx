@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
-import { 
-  FaMinus, 
-  FaPlus, 
-  FaShoppingCart, 
-  FaStar, 
+import {
+  FaMinus,
+  FaPlus,
+  FaShoppingCart,
+  FaStar,
   FaTag,
-  FaBox, 
+  FaBox,
   FaShippingFast,
   FaWarehouse,
   FaExclamationCircle
@@ -51,7 +51,7 @@ const ProductDetail = () => {
         if (data.success) {
           // Duplicate the same image multiple times
           let images
-          if(!Array.isArray(data.product.img))
+          if (!Array.isArray(data.product.img))
             images = Array(3).fill(data.product.img);
           else
             images = data.product.img
@@ -67,28 +67,29 @@ const ProductDetail = () => {
     };
     fetchProduct();
   }, [productId]);
-  
+
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch('https://api.merabestie.com/reviews/find-reviews', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId }),
-        });
-        const data = await response.json();
-        if (data.message === 'No reviews found for this product') {
-          setReviews([]);
-        } else {
-          setReviews(data.reviews || []);
-        }
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      }
-    };
-    fetchReviews();
+    // const fetchReviews = async () => {
+    //   try {
+    //     const response = await fetch('https://api.merabestie.com/reviews/find-reviews', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({ productId }),
+    //     });
+    //     const data = await response.json();
+    //     if (data.message === 'No reviews found for this product') {
+    //       setReviews([]);
+    //     } else {
+    //       setReviews(data.reviews || []);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching reviews:', error);
+    //   }
+    // };
+    // fetchReviews();
+    setReviews([])
   }, [productId]);
 
 
@@ -121,7 +122,7 @@ const ProductDetail = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({category}),
+        body: JSON.stringify({ category }),
       });
       const data = await response.json();
       if (data.success) {
@@ -152,21 +153,21 @@ const ProductDetail = () => {
 
   const handleAddToCart = async () => {
     const userId = sessionStorage.getItem('userId');
-    
 
-  
+
+
     if (stockStatus?.stock === 0) {
       toast.error('Sorry, this product is currently out of stock');
       return;
     }
-  
+
     // Ensure quantity is a number before sending to the server
     const validQuantity = parseInt(quantity, 10); // Ensure `quantity` is a number
     if (isNaN(validQuantity) || validQuantity <= 0) {
       toast.error('Invalid quantity');
       return;
     }
-  
+
     try {
       const response = await fetch('https://api.merabestie.com/cart/addtocart', {
         method: 'POST',
@@ -179,9 +180,9 @@ const ProductDetail = () => {
           quantity: validQuantity, // Send valid quantity here
         }),
       });
-  
+
       const data = await response.json();
-  
+
       if (data.success) {
         toast.success(
           <div className="flex items-center cursor-pointer" onClick={() => navigate('/cart')}>
@@ -196,7 +197,7 @@ const ProductDetail = () => {
       console.error('Error adding to cart:', error);
     }
   };
-  
+
 
   const handleWriteReview = () => {
     setShowReviewDialog(true);
@@ -222,12 +223,12 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-pink-50 flex items-center justify-center">
-        <motion.div 
+        <motion.div
           animate={{ rotate: 360 }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 1, 
-            ease: "linear" 
+          transition={{
+            repeat: Infinity,
+            duration: 1,
+            ease: "linear"
           }}
           className="w-16 h-16 border-4 border-t-4 border-t-pink-600 border-pink-200 rounded-full"
         />
@@ -242,7 +243,7 @@ const ProductDetail = () => {
       </Helmet>
       <Navbar />
       <ToastContainer />
-  
+
       <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white py-12 mt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -284,11 +285,10 @@ const ProductDetail = () => {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(img)}
-                      className={`w-16 h-16 object-cover rounded ${
-                        selectedImage === img
+                      className={`w-16 h-16 object-cover rounded ${selectedImage === img
                           ? "border-2 border-pink-600"
                           : "border"
-                      } cursor-pointer`}
+                        } cursor-pointer`}
                     >
                       <img
                         src={img}
@@ -299,7 +299,7 @@ const ProductDetail = () => {
                   ))}
                 </div>
               </div>
-  
+
               {/* Product Info Section */}
               <div className="p-8 space-y-6">
                 {/* Header Section with Name and Price */}
@@ -319,7 +319,7 @@ const ProductDetail = () => {
                     </div>
                   </div>
                 </div>
-  
+
                 {/* Stock Status Section */}
                 <div className="flex items-center space-x-4">
                   <div
@@ -348,7 +348,7 @@ const ProductDetail = () => {
                     </span>
                   </div>
                 </div>
-  
+
                 {/* Quantity Section */}
                 <div className="flex items-center space-x-4 py-6">
                   <button
@@ -369,7 +369,7 @@ const ProductDetail = () => {
                     <FaPlus />
                   </button>
                 </div>
-  
+
                 {/* Add to Cart Button */}
                 <div className="flex justify-center">
                   <button
@@ -382,7 +382,7 @@ const ProductDetail = () => {
               </div>
             </div>
           </motion.div>
-  
+
           {/* Reviews Section */}
           <ReviewSection
             reviews={reviews}
@@ -431,6 +431,6 @@ const ProductDetail = () => {
       </div>
     </>
   );
-}  
+}
 
 export default ProductDetail;
