@@ -98,63 +98,38 @@ const HomePage = ({ handleCheckout }) => {
     // Existing handleAddToCart logic preserved
     const handleAddToCart = async (product) => {
       // window.location.href = "/cart";
-      try {
-        let cartId = localStorage.getItem("cartId");
-        if (!cartId) {
-          cartId = "cart_" + Math.random().toString(36).substring(2, 15);
-          localStorage.setItem("cartId", cartId);
-        }
     
-        const userId = cartId;
-    
-        let existingCart = await fetchCart(userId, cartId);
-    
-        if (existingCart) {
-          if (!Array.isArray(existingCart.productsInCart)) {
-            existingCart.productsInCart = [];
-          }
-    
-          const productIndex = existingCart.productsInCart.findIndex(item => item === product._id);
-    
-          if (productIndex >= 0) {
-            alert("This product is already in the cart.");
-          } else {
-            existingCart.productsInCart.push(product._id);
-          }
-        } else {
-          existingCart = {
-            userId,
-            cartId,
-            productsInCart: [product._id]
-          };
-        }
-    
-        const response = await fetch("https://api.merabestie.com/cart/addtocart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            cartId,
-            productsInCart: existingCart.productsInCart,
-          }),
-        });
-    
-        const data = await response.json();
-    
-        if (data.success) {
-          setCartItems(existingCart.productsInCart);
-          setSideCartVisible(true);
-          localStorage.setItem("cartItems", JSON.stringify(existingCart.productsInCart));
-        } else {
-          alert(data.message || "Failed to add item to cart.");
-        }
-      } catch (error) {
-        console.error("Error adding to cart:", error);
-        alert("An error occurred while adding to the cart.");
+    const userId = sessionStorage.getItem('userId');
+  
+    try {
+      const response = await fetch('https://api.merabestie.com/cart/addtocart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          productId: product._id,
+          quantity: 1, // Send valid quantity here
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        toast.success(
+          <div className="flex items-center cursor-pointer" onClick={() => navigate('/cart')}>
+            Go to Cart →
+          </div>
+        );
+      } else {
+        toast.error(data.message || 'Product not saved to cart');
       }
-    };
+    } catch (error) {
+      toast.error('Error adding product to cart');
+      console.error('Error adding to cart:', error);
+    }
+  };
     
     // Helper function to fetch existing cart
     const fetchCart = async (userId, cartId) => {
