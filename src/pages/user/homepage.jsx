@@ -7,7 +7,7 @@ import CartItems from "../../components/user/cart/Cartitems";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const ScrollProgress = () => {
@@ -217,6 +217,7 @@ const HomePage = ({ handleCheckout }) => {
 
     return (
       <section className="container mx-auto px-4 py-8">
+        <ToastContainer />
         {/* Side Cart */}
         {/* Inside ProductGrid component, modify the side cart section */}
         {sideCartVisible && (
