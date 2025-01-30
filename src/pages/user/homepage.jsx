@@ -7,6 +7,7 @@ import CartItems from "../../components/user/cart/Cartitems";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 
 const ScrollProgress = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -98,39 +99,39 @@ const HomePage = ({ handleCheckout }) => {
     // Existing handleAddToCart logic preserved
     const handleAddToCart = async (product) => {
       // window.location.href = "/cart";
-    
-    const userId = sessionStorage.getItem('userId');
-  
-    try {
-      const response = await fetch('https://api.merabestie.com/cart/addtocart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          productId: product._id,
-          quantity: 1, // Send valid quantity here
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (data.success) {
-        toast.success(
-          <div className="flex items-center cursor-pointer" onClick={() => navigate('/cart')}>
-            Go to Cart →
-          </div>
-        );
-      } else {
-        toast.error(data.message || 'Product not saved to cart');
+
+      const userId = sessionStorage.getItem('userId');
+
+      try {
+        const response = await fetch('https://api.merabestie.com/cart/addtocart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId,
+            productId: product._id,
+            quantity: 1, // Send valid quantity here
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          toast.success(
+            <div className="flex items-center cursor-pointer" onClick={() => navigate('/cart')}>
+              Go to Cart →
+            </div>
+          );
+        } else {
+          toast.error(data.message || 'Product not saved to cart');
+        }
+      } catch (error) {
+        toast.error('Error adding product to cart');
+        console.error('Error adding to cart:', error);
       }
-    } catch (error) {
-      toast.error('Error adding product to cart');
-      console.error('Error adding to cart:', error);
-    }
-  };
-    
+    };
+
     // Helper function to fetch existing cart
     const fetchCart = async (userId, cartId) => {
       try {
@@ -141,7 +142,7 @@ const HomePage = ({ handleCheckout }) => {
           },
           body: JSON.stringify({ userId, cartId }),
         });
-    
+
         const data = await response.json();
         if (data.success) {
           return data.cart;
@@ -158,17 +159,17 @@ const HomePage = ({ handleCheckout }) => {
       await handleAddToCart(product);
       window.location.href = "/cart";
     };
-    
+
     function transformData(mydata) {
       return {
-          cart_data: {
-              items: mydata.map(item => ({
-                  variant_id: item.variant_id,
-                  quantity: item.quantity
-              }))
-          },
-          redirect_url: "https://your-domain.requestcatcher.com/?=anyparam=anyvalue&more=2",
-          timestamp: new Date().toISOString()
+        cart_data: {
+          items: mydata.map(item => ({
+            variant_id: item.variant_id,
+            quantity: item.quantity
+          }))
+        },
+        redirect_url: "https://your-domain.requestcatcher.com/?=anyparam=anyvalue&more=2",
+        timestamp: new Date().toISOString()
       };
     }
 
@@ -178,37 +179,37 @@ const HomePage = ({ handleCheckout }) => {
       //   alert('Please log in to proceed.');
       //   return;
       // }
-    
+
       // Transform cart data
       console.log(cartItems);
-      const mydata = 
-       cartItems.map(item => ({
+      const mydata =
+        cartItems.map(item => ({
           variant_id: item?.productId,
           quantity: item?.quantity || 1
         }));
-          
-      
-  
-      console.log("my data  : ", mydata); 
-     
+
+
+
+      console.log("my data  : ", mydata);
+
       try {
         const transformedData = transformData(mydata);
-    
-        const response = await fetch('https://api.merabestie.com/shiprocketapi', { 
-            method: 'POST',
-            headers: {
-                "Content-Type": 'application/json',
-            },
-            body: JSON.stringify(transformedData)
+
+        const response = await fetch('https://api.merabestie.com/shiprocketapi', {
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/json',
+          },
+          body: JSON.stringify(transformedData)
         });
-    
-        const myresponse = await response.json() ;
-        console.log("this was received : ", myresponse.token); 
-        window.HeadlessCheckout.addToCart( event , myresponse.token, {fallbackUrl: "https://your.fallback.com?product=123"});
-    } catch (error) {
+
+        const myresponse = await response.json();
+        console.log("this was received : ", myresponse.token);
+        window.HeadlessCheckout.addToCart(event, myresponse.token, { fallbackUrl: "https://your.fallback.com?product=123" });
+      } catch (error) {
         console.error('Error sending request:', error);
-    }
-    
+      }
+
     };
 
 
@@ -216,41 +217,41 @@ const HomePage = ({ handleCheckout }) => {
       <section className="container mx-auto px-4 py-8">
         {/* Side Cart */}
         {/* Inside ProductGrid component, modify the side cart section */}
-{sideCartVisible && (
-  <div className="fixed bottom-5 top-5 right-4 w-1/3 h-full bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">    <div className="relative h-full">
-      {/* Close button at top-right */}
-      <button 
-        onClick={() => setSideCartVisible(false)}
-        className="absolute top-4 right-4 z-10 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+        {sideCartVisible && (
+          <div className="fixed bottom-5 top-5 right-4 w-1/3 h-full bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">    <div className="relative h-full">
+            {/* Close button at top-right */}
+            <button
+              onClick={() => setSideCartVisible(false)}
+              className="absolute top-4 right-4 z-10 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-      {/* Cart Content */}
-      <div className="p-6 pt-16 h-full overflow-y-auto">
-        {/* <h2 className="text-2xl font-bold mb-6">Your Cart</h2> */}
-        <CartItems 
-          cartItem={cartItems} 
-          onRemove={(itemId) => {
-            setCartItems(prevItems => prevItems.filter(item => item !== itemId));
-          }}
-        />
-      </div>
+            {/* Cart Content */}
+            <div className="p-6 pt-16 h-full overflow-y-auto">
+              {/* <h2 className="text-2xl font-bold mb-6">Your Cart</h2> */}
+              <CartItems
+                cartItem={cartItems}
+                onRemove={(itemId) => {
+                  setCartItems(prevItems => prevItems.filter(item => item !== itemId));
+                }}
+              />
+            </div>
 
-      {/* Checkout Button */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t">
-        <button 
-          className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors"
-          onClick={handleCheckout}
-        >
-          Proceed to Checkout
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            {/* Checkout Button */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t">
+              <button
+                className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors"
+                onClick={handleCheckout}
+              >
+                Proceed to Checkout
+              </button>
+            </div>
+          </div>
+          </div>
+        )}
 
         {/* Rest of the ProductGrid remains the same */}
         <div className="flex justify-between items-center mb-6">
